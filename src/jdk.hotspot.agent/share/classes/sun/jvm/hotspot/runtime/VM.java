@@ -88,6 +88,8 @@ public class VM {
   private FileMapInfo  fileMapInfo;
   private Bytes        bytes;
 
+  /** Flag indicating if AOT is enabled in the build */
+  private boolean      hasAOT;
   /** Flag indicating if JVMTI support is included in the build */
   private boolean      isJvmtiSupported;
   /** Flags indicating whether we are attached to a core, C1, or C2 build */
@@ -401,6 +403,16 @@ public class VM {
 
     stackBias    = db.lookupIntConstant("STACK_BIAS").intValue();
     invocationEntryBCI = db.lookupIntConstant("InvocationEntryBci").intValue();
+
+    // We infer AOT if _method @ methodCounters is declared.
+    {
+      Type type = db.lookupType("MethodCounters");
+      if (type.getField("_method", false, false) == null) {
+        hasAOT = false;
+      } else {
+        hasAOT = true;
+      }
+    }
 
     // We infer the presence of JVMTI from the presence of the InstanceKlass::_breakpoints field.
     {
@@ -784,6 +796,11 @@ public class VM {
   /** Returns true if this is a isBigEndian, false otherwise */
   public boolean isBigEndian() {
     return isBigEndian;
+  }
+
+  /** Returns true if AOT is enabled, false otherwise */
+  public boolean hasAOT() {
+    return hasAOT;
   }
 
   /** Returns true if JVMTI is supported, false otherwise */

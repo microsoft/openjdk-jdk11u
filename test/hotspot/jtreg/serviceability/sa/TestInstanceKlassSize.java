@@ -137,7 +137,7 @@ public class TestInstanceKlassSize {
                     if (s.contains(instanceKlassName)) {
                        Asserts.assertTrue(
                           s.contains(jcmdInstanceKlassSize),
-                          "The size computed by SA for" +
+                          "The size computed by SA for " +
                           instanceKlassName + " does not match.");
                     }
                 }
