@@ -449,6 +449,7 @@ protected:
     return -1;
   }
   int replace_edge(Node* old, Node* neww);
+  int replace_edge(Node* old, Node* neww, PhaseIterGVN* gvn);
   int replace_edges_in_range(Node* old, Node* neww, int start, int end);
   // NULL out all inputs to eliminate incoming Def-Use edges.
   // Return the number of edges between 'n' and 'this'
@@ -1014,6 +1015,7 @@ public:
   // won't go into the table and we'll lose a little optimization.
   enum { NO_HASH = 0 };
   virtual uint hash() const;
+  virtual uint hash2() const;
   virtual uint cmp( const Node &n ) const;
 
   // Operation appears to be iteratively computed (such as an induction variable)
