@@ -71,6 +71,7 @@ public:
   vmSymbols::SID sid() const { return _sid; }
 
   // The text of the symbol as a null-terminated utf8 string.
+  uint        hash();
   const char* as_utf8();
   int         utf8_length();
 
