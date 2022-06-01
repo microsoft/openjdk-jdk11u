@@ -43,6 +43,7 @@
 #include "opto/opaquenode.hpp"
 #include "opto/phaseX.hpp"
 #include "opto/rootnode.hpp"
+#include "opto/escape.hpp"
 #include "opto/runtime.hpp"
 #include "opto/subnode.hpp"
 #include "opto/type.hpp"
@@ -2609,6 +2610,11 @@ void PhaseMacroExpand::eliminate_macro_nodes() {
       debug_only(int old_macro_count = C->macro_count(););
       switch (n->class_id()) {
       case Node::Class_Allocate:
+        success = eliminate_allocate_node(n->as_Allocate());
+        if (success) {
+          _number_of_allocates_removed++;
+        }
+        break;
       case Node::Class_AllocateArray:
         success = eliminate_allocate_node(n->as_Allocate());
         break;
