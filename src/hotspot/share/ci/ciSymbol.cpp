@@ -53,6 +53,19 @@ ciSymbol::ciSymbol(Symbol* s)
 // This class represents a Symbol* in the HotSpot virtual
 // machine.
 
+uint ciSymbol::hash() {
+   const char* str = get_symbol()->as_utf8();
+   uint hash = 0;
+   uint idx = 0;
+
+   while (str[idx] != '\0') {
+     hash = str[idx] + 31*hash;
+     idx++;
+   }
+
+   return hash;
+}
+
 // ------------------------------------------------------------------
 // ciSymbol::as_utf8
 //
