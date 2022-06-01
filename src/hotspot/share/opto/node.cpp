@@ -866,6 +866,28 @@ int Node::replace_edge(Node* old, Node* neww) {
   return nrep;
 }
 
+int Node::replace_edge(Node* old, Node* neww, PhaseIterGVN* gvn) {
+  if (old == neww)  return 0;  // nothing to do
+  uint nrep = 0;
+  for (uint i = 0; i < len(); i++) {
+    if (in(i) == old) {
+      if (i < req()) {
+        if (gvn != NULL) {
+          set_req_X(i, neww, gvn);
+        } else {
+          set_req(i, neww);
+        }
+      } else {
+        assert(gvn == NULL || gvn->is_IterGVN() == NULL, "no support for igvn here");
+        assert(find_prec_edge(neww) == -1, "spec violation: duplicated prec edge (node %d -> %d)", _idx, neww->_idx);
+        set_prec(i, neww);
+      }
+      nrep++;
+    }
+  }
+  return nrep;
+}
+
 /**
  * Replace input edges in the range pointing to 'old' node.
  */
@@ -1451,6 +1473,13 @@ uint Node::hash() const {
   uint sum = 0;
   for( uint i=0; i<_cnt; i++ )  // Add in all inputs
     sum = (sum<<1)-(uintptr_t)in(i);        // Ignore embedded NULLs
+  return (sum>>2) + _cnt + Opcode();
+}
+
+uint Node::hash2() const {
+  uint sum = 0;
+  for( uint i=0; i<_cnt; i++ )  // Add in all inputs
+    sum = (sum<<1)-(uintptr_t) (in(i) != NULL ? in(i)->_idx : 0);        // Ignore embedded NULLs
   return (sum>>2) + _cnt + Opcode();
 }
 
