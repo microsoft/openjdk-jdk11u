@@ -2217,6 +2217,25 @@ void Compile::remove_root_to_sfpts_edges(PhaseIterGVN& igvn) {
   }
 }
 
+uint ir_graph_hash(Node* root, uint seed1, uint seed2) {
+  uint hash = 0;
+  Unique_Node_List ideal_nodes;
+  ideal_nodes.push(root);
+
+  for( uint next = 0; next < ideal_nodes.size(); ++next ) {
+    Node* n = ideal_nodes.at(next);
+
+    hash = (hash | n->hash2() | n->_idx) % 74207281;
+
+    for (DUIterator_Fast imax, i = n->fast_outs(imax); i < imax; i++) {
+      Node* m = n->fast_out(i);   // Get user
+      ideal_nodes.push(m);
+    }
+  }
+
+  return seed1 + seed2 + hash;
+}
+
 //------------------------------Optimize---------------------------------------
 // Given a graph, optimize it.
 void Compile::Optimize() {
@@ -2315,6 +2334,25 @@ void Compile::Optimize() {
       if (major_progress()) print_method(PHASE_PHASEIDEAL_BEFORE_EA, 2);
       if (failing())  return;
     }
+
+    uint hash = 0;
+    uint scaled = 0;
+
+    if (SplitPhiBases) {
+      hash = ir_graph_hash(root(), method()->holder()->name()->hash(), method()->name()->hash());
+
+      ConnectionGraph::do_analysis(this, &igvn, true);
+      if (failing())  return;
+
+      igvn.optimize();
+      if (failing())  return;
+
+      // Only try to split-phis if there are Allocate nodes that NoEscape
+      if (congraph() != NULL) {
+        congraph()->split_bases();
+      }
+    }
+
     ConnectionGraph::do_analysis(this, &igvn);
 
     if (failing())  return;
@@ -2329,12 +2367,20 @@ void Compile::Optimize() {
       TracePhase tp("macroEliminate", &timers[_t_macroEliminate]);
       PhaseMacroExpand mexp(igvn);
       mexp.eliminate_macro_nodes();
+
+      scaled = mexp._number_of_allocates_removed;
+
       igvn.set_delay_transform(false);
 
       igvn.optimize();
       print_method(PHASE_ITER_GVN_AFTER_ELIMINATION, 2);
 
       if (failing())  return;
+    }
+
+    if (SplitPhiBases) {
+      ttyLocker ttyl;
+      tty->print_cr("%X %s::%s %u", hash, _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
     }
   }
 
