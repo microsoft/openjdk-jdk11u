@@ -2611,7 +2611,7 @@ void PhaseMacroExpand::eliminate_macro_nodes() {
       switch (n->class_id()) {
       case Node::Class_Allocate:
         success = eliminate_allocate_node(n->as_Allocate());
-        if (success) {
+        if (LogSplitPhiBases && success) {
           _number_of_allocates_removed++;
         }
         break;
