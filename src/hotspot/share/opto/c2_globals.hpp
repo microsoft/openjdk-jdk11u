@@ -527,6 +527,9 @@
   product(bool, SplitPhiBases, false,                                       \
           "Split object bases through Phis")                                \
                                                                             \
+  product(bool, LogSplitPhiBases, false,                                    \
+          "Print number of scalar replaced objects per compilation unit.")  \
+                                                                            \
   product(bool, DoEscapeAnalysis, true,                                     \
           "Perform escape analysis")                                        \
                                                                             \
