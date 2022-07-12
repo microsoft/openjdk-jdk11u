@@ -2335,7 +2335,7 @@ void Compile::Optimize() {
       if (failing())  return;
     }
 
-    uint hash   = ir_graph_hash(root(), method()->holder()->name()->hash(), method()->name()->hash());;
+    uint hash   = LogSplitPhiBases ? ir_graph_hash(root(), method()->holder()->name()->hash(), method()->name()->hash()) : 0;
     uint scaled = 0;
 
     if (SplitPhiBases) {
@@ -2366,7 +2366,7 @@ void Compile::Optimize() {
       PhaseMacroExpand mexp(igvn);
       mexp.eliminate_macro_nodes();
 
-      scaled = mexp._number_of_allocates_removed;
+      scaled = LogSplitPhiBases ? mexp._number_of_allocates_removed : 0;
 
       igvn.set_delay_transform(false);
 
@@ -2376,7 +2376,7 @@ void Compile::Optimize() {
       if (failing())  return;
     }
 
-    {
+    if (LogSplitPhiBases) {
       ttyLocker ttyl;
       tty->print_cr("%X %s::%s %u", hash, _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
     }
