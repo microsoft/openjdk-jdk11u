@@ -3557,7 +3557,8 @@ void ConnectionGraph::split_unique_types(GrowableArray<Node *>  &alloc_worklist,
 }
 
 bool ConnectionGraph::come_from_allocate(Node* n) const {
-  while (true) {
+  int max_iterations = 1000;
+  while (--max_iterations > 0) {
     switch (n->Opcode()) {
       case Op_CastPP:
       case Op_CheckCastPP:
@@ -3588,6 +3589,9 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
           return false;
         }
         assert(false, "Should not reach here. Unmatched %d %s", n->_idx, n->Name());
+        ttyLocker ttyl;
+        tty->print_cr("Unknown node type in come_from_allocate. %d:%s", n->_idx, n->Name());
+        break;
     }
   }
 
