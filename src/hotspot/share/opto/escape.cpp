@@ -3590,7 +3590,7 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
         }
         assert(false, "Should not reach here. Unmatched %d %s", n->_idx, n->Name());
         ttyLocker ttyl;
-        tty->print_cr("Unknown node type in come_from_allocate. %d:%s", n->_idx, n->Name());
+        tty->print_cr("Unknown node type in come_from_allocate. %d", n->_idx);
         break;
     }
   }
