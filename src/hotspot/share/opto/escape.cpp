@@ -3607,7 +3607,7 @@ void ConnectionGraph::split_unique_types(GrowableArray<Node *>  &alloc_worklist,
 }
 
 bool ConnectionGraph::come_from_allocate(Node* n) const {
-  int max_iterations = 1000;
+  int max_iterations = 50;
   while (--max_iterations > 0) {
     switch (n->Opcode()) {
       case Op_CastPP:
@@ -3623,11 +3623,15 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
         n = n->in(0);
         break;
       case Op_Parm:
+      case Op_GetAndSetN:
+      case Op_GetAndSetP:
       case Op_LoadP:
       case Op_LoadN:
       case Op_LoadNKlass:
       SHENANDOAHGC_ONLY(case Op_ShenandoahLoadReferenceBarrier:)
+      SHENANDOAHGC_ONLY(case Op_ShenandoahIUBarrier:)
       case Op_ConP:
+      case Op_ConN:
       case Op_CreateEx:
       case Op_AllocateArray:
       case Op_Phi:
@@ -3635,13 +3639,8 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
       case Op_Allocate:
         return true;
       default:
-        if (n->is_Call()) {
-          return false;
-        }
         assert(false, "Should not reach here. Unmatched %d %s", n->_idx, n->Name());
-        ttyLocker ttyl;
-        tty->print_cr("Unknown node type in come_from_allocate. %d", n->_idx);
-        break;
+        return false;
     }
   }
 
