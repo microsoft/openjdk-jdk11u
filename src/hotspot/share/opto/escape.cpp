@@ -3644,7 +3644,6 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
     }
   }
 
-  // should never reach here
   return false;
 }
 
