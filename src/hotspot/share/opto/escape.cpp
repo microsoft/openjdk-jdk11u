@@ -3888,26 +3888,4 @@ void ConnectionGraph::dump(GrowableArray<PointsToNode*>& ptnodes_worklist) {
   }
 }
 
-void ConnectionGraph::dump_ir(const char* title) {
-    ttyLocker ttyl;  // keep the following output all in one block
-
-    tty->print_cr("%s", title);
-
-    Unique_Node_List ideal_nodes; // Used by CG construction and types splitting.
-    ideal_nodes.map(_compile->live_nodes(), NULL);  // preallocate space
-    ideal_nodes.push(_compile->root());
-
-    for( uint next = 0; next < ideal_nodes.size(); ++next ) {
-      Node* n = ideal_nodes.at(next);
-
-      n->dump();
-
-      for (DUIterator_Fast imax, i = n->fast_outs(imax); i < imax; i++) {
-        Node* m = n->fast_out(i);
-        ideal_nodes.push(m);
-      }
-    }
-
-    tty->cr(); tty->cr(); tty->cr(); tty->cr();
-}
 #endif
