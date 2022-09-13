@@ -3715,8 +3715,6 @@ void ConnectionGraph::split_bases() {
   bool prev_delay_transform = _igvn->delay_transform();
   _igvn->set_delay_transform(true);
 
-  //NOT_PRODUCT(dump_ir("Before Split_Bases");)
-
   // Iterate over all IR nodes looking for Regions.
   //   When a region is found we'll look for Phi nodes coming out of the region.
   //     When we find a Phi node we check if we can/need to split it.
@@ -3769,8 +3767,6 @@ void ConnectionGraph::split_bases() {
       ideal_nodes.push(m);
     }
   }
-
-  // NOT_PRODUCT( dump_ir("After Split_Bases"); )
 
   _igvn->set_delay_transform(prev_delay_transform);
 }
