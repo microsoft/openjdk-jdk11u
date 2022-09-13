@@ -614,7 +614,6 @@ public:
 
 #ifndef PRODUCT
   void dump(GrowableArray<PointsToNode*>& ptnodes_worklist);
-  void dump_ir(const char* title);
 #endif
 };
 
