@@ -2316,7 +2316,6 @@ void Compile::Optimize() {
       if (failing())  return;
     }
 
-    uint hash   = LogSplitPhiBases ? ir_graph_hash(root(), method()->holder()->name()->hash(), method()->name()->hash()) : 0;
     uint scaled = 0;
 
     if (SplitPhiBases) {
@@ -2359,7 +2358,7 @@ void Compile::Optimize() {
 
     if (LogSplitPhiBases) {
       ttyLocker ttyl;
-      tty->print_cr("%X %s::%s %u", hash, _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
+      tty->print_cr("%s::%s %u", _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
     }
   }
 
