@@ -524,11 +524,11 @@
   develop(bool, TracePostallocExpand, false, "Trace expanding nodes after"  \
           " register allocation.")                                          \
                                                                             \
-  product(bool, SplitPhiBases, false,                                       \
-          "Split object bases through Phis")                                \
+  product(bool, ReduceAllocationMerges, false,                              \
+          "Try to simplify allocation merges before Scalar Replacement.")   \
                                                                             \
-  product(bool, LogSplitPhiBases, false,                                    \
-          "Print number of scalar replaced objects per compilation unit.")  \
+  notproduct(bool, TraceReduceAllocationMerges, false,                      \
+          "Trace decision for simplifying allocation merges.")              \
                                                                             \
   product(bool, DoEscapeAnalysis, true,                                     \
           "Perform escape analysis")                                        \
