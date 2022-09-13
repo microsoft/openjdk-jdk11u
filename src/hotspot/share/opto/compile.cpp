@@ -2217,25 +2217,6 @@ void Compile::remove_root_to_sfpts_edges(PhaseIterGVN& igvn) {
   }
 }
 
-uint ir_graph_hash(Node* root, uint seed1, uint seed2) {
-  uint hash = 0;
-  Unique_Node_List ideal_nodes;
-  ideal_nodes.push(root);
-
-  for( uint next = 0; next < ideal_nodes.size(); ++next ) {
-    Node* n = ideal_nodes.at(next);
-
-    hash = (hash | n->hash2() | n->_idx) % 74207281;
-
-    for (DUIterator_Fast imax, i = n->fast_outs(imax); i < imax; i++) {
-      Node* m = n->fast_out(i);   // Get user
-      ideal_nodes.push(m);
-    }
-  }
-
-  return seed1 + seed2 + hash;
-}
-
 //------------------------------Optimize---------------------------------------
 // Given a graph, optimize it.
 void Compile::Optimize() {
