@@ -2318,7 +2318,7 @@ void Compile::Optimize() {
 
     uint scaled = 0;
 
-    if (SplitPhiBases) {
+    if (ReduceAllocationMerges) {
       ConnectionGraph::do_analysis(this, &igvn, true);
       if (failing())  return;
 
@@ -2346,7 +2346,7 @@ void Compile::Optimize() {
       PhaseMacroExpand mexp(igvn);
       mexp.eliminate_macro_nodes();
 
-      scaled = LogSplitPhiBases ? mexp._number_of_allocates_removed : 0;
+      scaled = TraceReduceAllocationMerges ? mexp._number_of_allocates_removed : 0;
 
       igvn.set_delay_transform(false);
 
@@ -2356,7 +2356,7 @@ void Compile::Optimize() {
       if (failing())  return;
     }
 
-    if (LogSplitPhiBases) {
+    if (TraceReduceAllocationMerges) {
       ttyLocker ttyl;
       tty->print_cr("%s::%s %u", _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
     }
