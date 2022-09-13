@@ -3883,5 +3883,4 @@ void ConnectionGraph::dump(GrowableArray<PointsToNode*>& ptnodes_worklist) {
     }
   }
 }
-
 #endif
