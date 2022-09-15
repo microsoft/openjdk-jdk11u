@@ -3589,6 +3589,9 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
       case Op_Allocate:
         return true;
       default:
+        if (n->is_Call()) {
+          return false;
+        }
         assert(false, "Should not reach here. Unmatched %d %s", n->_idx, n->Name());
         return false;
     }
