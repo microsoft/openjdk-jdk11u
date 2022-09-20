@@ -3569,15 +3569,16 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
         n = n->in(1);
         break;
       case Op_Proj:
-        assert(n->as_Proj()->_con == TypeFunc::Parms, "Should be proj from a call");
         n = n->in(0);
         break;
       case Op_Parm:
       case Op_GetAndSetN:
       case Op_GetAndSetP:
       case Op_LoadP:
+      case Op_LoadPLocked:
       case Op_LoadN:
       case Op_LoadNKlass:
+      case Op_LoadKlass:
       SHENANDOAHGC_ONLY(case Op_ShenandoahLoadReferenceBarrier:)
       SHENANDOAHGC_ONLY(case Op_ShenandoahIUBarrier:)
       case Op_ConP:
