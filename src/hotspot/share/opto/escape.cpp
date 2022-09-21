@@ -3574,6 +3574,7 @@ bool ConnectionGraph::come_from_allocate(Node* n) const {
       case Op_Parm:
       case Op_GetAndSetN:
       case Op_GetAndSetP:
+      case Op_LoadBarrier:
       case Op_LoadP:
       case Op_LoadPLocked:
       case Op_LoadN:
