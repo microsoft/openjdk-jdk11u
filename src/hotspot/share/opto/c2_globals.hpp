@@ -524,10 +524,10 @@
   develop(bool, TracePostallocExpand, false, "Trace expanding nodes after"  \
           " register allocation.")                                          \
                                                                             \
-  product(bool, ReduceAllocationMerges, false,                              \
+  experimental(bool, ReduceAllocationMerges, false,                         \
           "Try to simplify allocation merges before Scalar Replacement.")   \
                                                                             \
-  notproduct(bool, TraceReduceAllocationMerges, false,                      \
+  experimental(bool, TraceReduceAllocationMerges, false,                    \
           "Trace decision for simplifying allocation merges.")              \
                                                                             \
   product(bool, DoEscapeAnalysis, true,                                     \
