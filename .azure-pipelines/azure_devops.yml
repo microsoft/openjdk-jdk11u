@@ -1,0 +1,23 @@
+name: "$(Year:yyyy).$(Month).$(BuildID)"
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pr: none
+
+resources:
+  repositories:
+    - repository: jdk-harness
+      type: git
+      name: Devdiv/jdk-harness
+      ref: refs/heads/main
+      project: "Devdiv"
+
+variables:
+  JTREG_VERSION: "6.1"
+
+stages:
+  - template: /.devops/jdk11u/release.yml@jdk-harness
