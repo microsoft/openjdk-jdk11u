@@ -69,8 +69,7 @@ parameters:
   displayName: Do you wish to retain this build?
   type: boolean
   default: false
-
-
+  
 name: "$(Year:yyyy).$(Month).$(BuildID)"
 
 trigger:
@@ -85,17 +84,15 @@ resources:
   repositories:
     - repository: jdk-harness
       type: git
-      name: DevDiv/jdk-harness
-      ref: refs/heads/main
-      #ref: refs/heads/shwethac/test-release
-      # refs/heads/shwethac/test-release  point to feature in azure devops
-      #project: "DevDiv"
-
+      name: Devdiv/jdk-harness
+      ref: refs/heads/main      
+      
 variables:
   JTREG_VERSION: "6.1"
 
 stages:
   - template: /.devops/jdk11u/release.yml@jdk-harness
+
     parameters: 
       build_platforms : ${{parameters.build_platforms}}
       installers_platforms : ${{parameters.installers_platforms}}
