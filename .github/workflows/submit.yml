@@ -3,8 +3,9 @@ name: Pre-submit tests
 on:
   push:
     branches-ignore:
-      - master
+      - main
       - pr/*
+      - ms-patches/*
   workflow_dispatch:
     inputs:
       platforms:
