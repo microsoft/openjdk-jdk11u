@@ -256,7 +256,7 @@ void VM_Version::initialize() {
     FLAG_SET_DEFAULT(UseMD5Intrinsics, false);
   }
 
-  if (_features & (HWCAP_SHA1 | HWCAP_SHA2)) {
+  if (_features & (CPU_SHA1 | CPU_SHA2)) {
     if (FLAG_IS_DEFAULT(UseSHA)) {
       FLAG_SET_DEFAULT(UseSHA, true);
     }
