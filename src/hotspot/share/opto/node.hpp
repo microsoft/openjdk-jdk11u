@@ -449,6 +449,7 @@ protected:
     return -1;
   }
   int replace_edge(Node* old, Node* neww);
+  int replace_edge(Node* old, Node* neww, PhaseIterGVN* gvn);
   int replace_edges_in_range(Node* old, Node* neww, int start, int end);
   // NULL out all inputs to eliminate incoming Def-Use edges.
   // Return the number of edges between 'n' and 'this'
