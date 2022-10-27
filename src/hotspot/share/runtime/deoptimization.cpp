@@ -1558,9 +1558,13 @@ class DeoptActionSerializer : public JfrSerializer {
 
 static void register_serializers() {
   static int critical_section = 0;
+  // This function was backported from JBS issue 8216041 which was introduced in jdk14. Jdk14 has a different 
+  // argument order for Atomic::cmpxchg. This needed to be adjusted for jdk11 during the backport.
   if (1 == critical_section || Atomic::cmpxchg(1, &critical_section, 0) == 1) {
     return;
   }
+  // As a part of the backport, jdk14 only has 3 arguments for register_serialzer but there are still 4 
+  // arguments in jdk11 where the second argument is a require_safepoint boolean. This is set to false.
   JfrSerializer::register_serializer(TYPE_DEOPTIMIZATIONREASON, false, true, new DeoptReasonSerializer());
   JfrSerializer::register_serializer(TYPE_DEOPTIMIZATIONACTION, false, true, new DeoptActionSerializer());
 }
