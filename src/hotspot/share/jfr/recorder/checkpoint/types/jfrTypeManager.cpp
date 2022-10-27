@@ -218,6 +218,10 @@ bool JfrTypeManager::initialize() {
   register_type(TYPE_CODEBLOBTYPE, false, true, new CodeBlobTypeConstant());
   register_type(TYPE_VMOPERATIONTYPE, false, true, new VMOperationTypeConstant());
   register_type(TYPE_THREADSTATE, false, true, new ThreadStateConstant());
+
+  // The following two types were added in a backport from JBS issue 8216041. In the original PR from jdk14, 
+  // register_type only took in 3 arguments. In jdk11 4 arguments are still required with require_safepoint
+  // boolean as the second argument of this method. This is set to false.
   register_type(TYPE_BYTECODE, false, true, new BytecodeConstant());
   register_type(TYPE_COMPILERTYPE, false, true, new CompilerTypeConstant());
 
