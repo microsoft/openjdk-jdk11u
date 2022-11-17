@@ -3,22 +3,22 @@ parameters:
   displayName: Build platforms
   type: object
   default:
-    - linux
+    - linux_x64
     - linux_aarch64
-    - macOS
+    - macOS_x64
     - macOS_aarch64
-    - windows
+    - windows_x64
     - windows_aarch64
     - alpine_x64
 - name: installers_platforms
   displayName: Installer platforms
   type: object
   default:
-    - linux
+    - linux_x64
     - linux_aarch64
-    - macOS
+    - macOS_x64
     - macOS_aarch64
-    - windows    
+    - windows_x64
     - windows_aarch64
     - mariner_x64
     - mariner_aarch64
@@ -27,11 +27,11 @@ parameters:
   displayName: Test platforms
   type: object
   default:
-    - linux
+    - linux_x64
     - linux_aarch64
-    - macOS
+    - macOS_x64
     - macOS_aarch64
-    - windows
+    - windows_x64
     - windows_aarch64
     - alpine_x64
     
@@ -39,10 +39,10 @@ parameters:
   displayName: Shenandoah test platforms
   type: object
   default:
-    - linux
+    - linux_x64
     - linux_aarch64
-    - macOS
-    - windows
+    - macOS_x64
+    - windows_x64
     - windows_aarch64
     - alpine_x64
     
@@ -85,7 +85,7 @@ resources:
     - repository: jdk-harness
       type: git
       name: Devdiv/jdk-harness
-      ref: refs/heads/main      
+      ref: refs/heads/main
       
 variables:
   JTREG_VERSION: "6.1"
@@ -93,13 +93,13 @@ variables:
 stages:
   - template: /.devops/jdk11u/release.yml@jdk-harness
 
-    parameters: 
+    parameters:
       build_platforms : ${{parameters.build_platforms}}
       installers_platforms : ${{parameters.installers_platforms}}
-      test_platforms : ${{parameters.test_platforms}} 
-      shenandoah_test_platforms : ${{parameters.shenandoah_test_platforms}} 
+      test_platforms : ${{parameters.test_platforms}}
+      shenandoah_test_platforms : ${{parameters.shenandoah_test_platforms}}
       release_type : ${{parameters.release_type}}
       release_name : ${{parameters.release_name}}
-      comments : ${{parameters.comments}}   
+      comments : ${{parameters.comments}}
       retain_build : ${{parameters.retain_build}}
   
