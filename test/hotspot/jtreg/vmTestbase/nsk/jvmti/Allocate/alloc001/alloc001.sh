@@ -23,4 +23,5 @@
 # as sh's ulimit works weirdly on solaris and jtreg doesn't gurantee what
 # shell is used, have to use this file to be sure alloc001.bash is run by bash
 
+set -x
 bash ./alloc001.bash

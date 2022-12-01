@@ -20,6 +20,7 @@
 # or visit www.oracle.com if you need additional information or have any
 # questions.
 
+set -x
 JAVA="$TESTJAVA/bin/java"
 JAVA_OPTS="$TESTJAVAOPTS $TESTVMOPTS -cp $TESTCLASSPATH -agentlib:alloc001"
 
