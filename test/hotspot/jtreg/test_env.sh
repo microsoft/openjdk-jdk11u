@@ -81,7 +81,7 @@ case "$OS" in
     MV=mv
     ;;
   * )
-    echo "Unrecognized system!"
+    echo "Unrecognized system! Can't do anything with OS: $OS"
     exit 1;
     ;;
 esac
