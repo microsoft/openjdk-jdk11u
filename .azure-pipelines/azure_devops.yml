@@ -1,0 +1,105 @@
+parameters:
+- name: build_platforms
+  displayName: Build platforms
+  type: object
+  default:
+    - linux_x64
+    - linux_aarch64
+    - macOS_x64
+    - macOS_aarch64
+    - windows_x64
+    - windows_aarch64
+    - alpine_x64
+- name: installers_platforms
+  displayName: Installer platforms
+  type: object
+  default:
+    - linux_x64
+    - linux_aarch64
+    - macOS_x64
+    - macOS_aarch64
+    - windows_x64
+    - windows_aarch64
+    - mariner_x64
+    - mariner_aarch64
+    - alpine_x64
+- name: test_platforms
+  displayName: Test platforms
+  type: object
+  default:
+    - linux_x64
+    - linux_aarch64
+    - macOS_x64
+    - macOS_aarch64
+    - windows_x64
+    - windows_aarch64
+    - alpine_x64
+    
+- name: shenandoah_test_platforms
+  displayName: Shenandoah test platforms
+  type: object
+  default:
+    - linux_x64
+    - linux_aarch64
+    - macOS_x64
+    - windows_x64
+    - windows_aarch64
+    - alpine_x64
+    
+- name: release_type
+  displayName: Release type
+  type: string
+  default: LTS
+  values:
+  - LTS
+  - EA
+  - experimental
+
+- name: release_name
+  displayName: Release Tag
+  type: string
+  default: PSU Release
+
+- name: comments
+  displayName: Release comments
+  type: string
+  default: " "
+
+- name: retain_build
+  displayName: Do you wish to retain this build?
+  type: boolean
+  default: false
+  
+name: "$(Year:yyyy).$(Month).$(BuildID)"
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pr: none
+
+resources:
+  repositories:
+    - repository: jdk-harness
+      type: git
+      name: Devdiv/jdk-harness
+      ref: refs/heads/main
+      
+variables:
+  JTREG_VERSION: "6.1"
+
+stages:
+  - template: /.devops/jdk11u/release.yml@jdk-harness
+
+    parameters:
+      build_platforms : ${{parameters.build_platforms}}
+      installers_platforms : ${{parameters.installers_platforms}}
+      test_platforms : ${{parameters.test_platforms}}
+      shenandoah_test_platforms : ${{parameters.shenandoah_test_platforms}}
+      release_type : ${{parameters.release_type}}
+      release_name : ${{parameters.release_name}}
+      comments : ${{parameters.comments}}
+      retain_build : ${{parameters.retain_build}}
+  
