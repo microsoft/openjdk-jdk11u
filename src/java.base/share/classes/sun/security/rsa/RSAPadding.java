@@ -366,10 +366,8 @@ public final class RSAPadding {
         byte[] data = new byte[n];
         System.arraycopy(padded, p, data, 0, n);
 
-        BadPaddingException bpe = new BadPaddingException("Decryption error");
-
         if (bp) {
-            throw bpe;
+            throw new BadPaddingException("Decryption error");
         } else {
             return data;
         }
