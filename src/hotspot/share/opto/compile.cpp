@@ -2315,6 +2315,22 @@ void Compile::Optimize() {
       if (major_progress()) print_method(PHASE_PHASEIDEAL_BEFORE_EA, 2);
       if (failing())  return;
     }
+
+    uint scaled = 0;
+
+    if (ReduceAllocationMerges) {
+      ConnectionGraph::do_analysis(this, &igvn, true);
+      if (failing())  return;
+
+      igvn.optimize();
+      if (failing())  return;
+
+      // Only try to split-phis if there are Allocate nodes that NoEscape
+      if (congraph() != NULL) {
+        congraph()->split_bases();
+      }
+    }
+
     ConnectionGraph::do_analysis(this, &igvn);
 
     if (failing())  return;
@@ -2329,12 +2345,20 @@ void Compile::Optimize() {
       TracePhase tp("macroEliminate", &timers[_t_macroEliminate]);
       PhaseMacroExpand mexp(igvn);
       mexp.eliminate_macro_nodes();
+
+      scaled = TraceReduceAllocationMerges ? mexp._number_of_allocates_removed : 0;
+
       igvn.set_delay_transform(false);
 
       igvn.optimize();
       print_method(PHASE_ITER_GVN_AFTER_ELIMINATION, 2);
 
       if (failing())  return;
+    }
+
+    if (TraceReduceAllocationMerges) {
+      ttyLocker ttyl;
+      tty->print_cr("%s::%s %u", _method->holder()->name()->as_utf8(), _method->name()->as_utf8(), scaled);
     }
   }
 
