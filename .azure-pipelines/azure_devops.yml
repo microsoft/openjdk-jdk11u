@@ -90,7 +90,7 @@ resources:
     - repository: jdk-harness
       type: git
       name: Devdiv/jdk-harness
-      ref: refs/heads/main
+      ref: refs/heads/luiseduardom/add-git-bundle
       
 variables:
   JTREG_VERSION: "6.1"
