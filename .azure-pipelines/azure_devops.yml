@@ -65,6 +65,11 @@ parameters:
   type: string
   default: " "
 
+- name: bundle_tag
+  displayName: Bundle Tag
+  type: string
+  default: ""
+
 - name: retain_build
   displayName: Do you wish to retain this build?
   type: boolean
