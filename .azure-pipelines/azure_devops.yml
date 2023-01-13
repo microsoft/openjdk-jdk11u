@@ -106,5 +106,6 @@ stages:
       release_type : ${{parameters.release_type}}
       release_name : ${{parameters.release_name}}
       comments : ${{parameters.comments}}
+      bundle_tag: ${{ parameters.bundle_tag }}
       retain_build : ${{parameters.retain_build}}
   
