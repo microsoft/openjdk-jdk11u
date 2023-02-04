@@ -68,7 +68,7 @@ parameters:
 - name: bundle_tag
   displayName: Bundle Tag
   type: string
-  default: ""
+  default: " "
 
 - name: retain_build
   displayName: Do you wish to retain this build?
@@ -106,6 +106,7 @@ stages:
       release_type : ${{parameters.release_type}}
       release_name : ${{parameters.release_name}}
       comments : ${{parameters.comments}}
-      bundle_tag: ${{ parameters.bundle_tag }}
+      ${{ if ne('${{ parameters.bundle_tag }}', ' ') }}:
+        bundle_tag: ${{ parameters.bundle_tag }}
       retain_build : ${{parameters.retain_build}}
   
