@@ -77,8 +77,6 @@ class OldObjectRoot : public AllStatic {
         return "JVMTI";
       case _code_cache:
         return "Code Cache";
-      case _string_table:
-        return "String Table";
       case _aot:
         return "AOT";
       default:

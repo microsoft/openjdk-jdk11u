@@ -92,7 +92,6 @@ void RootSetClosure<Delegate>::process() {
   JvmtiExport::oops_do(this);
   SystemDictionary::oops_do(this);
   Management::oops_do(this);
-  StringTable::oops_do(this);
   AOTLoader::oops_do(this);
 }
 
