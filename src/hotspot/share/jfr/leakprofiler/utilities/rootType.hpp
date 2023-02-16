@@ -41,7 +41,6 @@ class OldObjectRoot : public AllStatic {
     _management,
     _jvmti,
     _code_cache,
-    _string_table,
     _aot,
     _number_of_systems
   };
