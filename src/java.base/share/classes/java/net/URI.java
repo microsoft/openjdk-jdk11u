@@ -3444,11 +3444,10 @@ public final class URI
                 p = q;
             } while (p < n);
 
-            if(p < n && parseRegChars)
+            while(p < n && parseRegChars && !at(p, n, ':'))
             {
-                q = scan(p, n, L_REG_NAME, H_REG_NAME);
-                if(q == n)
-                    p = q;
+                q = scan(p, p+1, L_REG_NAME, H_REG_NAME);
+                p = q;
             }
 
             if ((p < n) && !at(p, n, ':'))
