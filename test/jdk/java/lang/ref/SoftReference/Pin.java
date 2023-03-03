@@ -24,11 +24,17 @@
 /* @test
  * @bug 4076287
  * @summary Invoking get on a SoftReference shouldn't pin the referent
- * @run main/othervm -ms16m -mx16m Pin
+ * @run main/othervm -ms64m -mx64m Pin
  * @author Peter Jones
  * @author Mark Reinhold
  */
 
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
+ */
 
 import java.lang.ref.SoftReference;
 

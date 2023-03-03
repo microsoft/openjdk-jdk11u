@@ -27,7 +27,14 @@
  * @summary Test verifies that creation of tree representation of the native
  *          image metadata for USHORT_GRAY images does not cause the
  *          OutOfMemoryError
- * @run main/othervm -Xms32M -Xmx32M UshortOutOfMemoryTest
+ * @run main/othervm -Xms64M -Xmx64M UshortOutOfMemoryTest
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.awt.image.BufferedImage;

@@ -30,7 +30,14 @@
  *
  * @run main ItxtUtf8Test
  *
- * @run main/othervm/timeout=10 -Xmx4m ItxtUtf8Test truncate
+ * @run main/othervm/timeout=10 -Xmx64m ItxtUtf8Test truncate
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.awt.image.BufferedImage;

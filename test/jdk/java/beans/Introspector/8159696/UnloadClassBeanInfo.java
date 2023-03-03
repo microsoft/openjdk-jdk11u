@@ -38,7 +38,14 @@ import java.util.Arrays;
  * @bug 8159696
  * @library /javax/swing/regtesthelpers
  * @compile ./stub/Stub.java
- * @run main/othervm -mx32M UnloadClassBeanInfo
+ * @run main/othervm -mx64M UnloadClassBeanInfo
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 public class UnloadClassBeanInfo {
 

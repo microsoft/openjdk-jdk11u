@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -985,6 +985,9 @@ public:
                       Register len_reg, Register used, Register used_addr, Register saved_encCounter_start);
 
 #endif
+
+  void fast_md5(Register buf, Address state, Address ofs, Address limit,
+                bool multi_block);
 
   void fast_sha1(XMMRegister abcd, XMMRegister e0, XMMRegister e1, XMMRegister msg0,
                  XMMRegister msg1, XMMRegister msg2, XMMRegister msg3, XMMRegister shuf_mask,

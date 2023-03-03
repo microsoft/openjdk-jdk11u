@@ -26,8 +26,15 @@
  * @bug 8024521
  * @summary Closing ProcessPipeInputStream at the time the process exits is racy
  *          and leads to data corruption. Run this test manually (as
- *          an ordinary java program) with  -Xmx8M  to repro bug 8024521.
- * @run main/othervm -Xmx8M -Dtest.duration=2 CloseRace
+ *          an ordinary java program) with  -Xmx64M  to repro bug 8024521.
+ * @run main/othervm -Xmx64M -Dtest.duration=2 CloseRace
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.io.*;

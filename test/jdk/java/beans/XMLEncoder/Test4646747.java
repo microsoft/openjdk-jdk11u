@@ -26,7 +26,14 @@
  * @bug 4646747
  * @summary Tests that persistence delegate is correct after memory stress
  * @author Mark Davidson
- * @run main/othervm -ms16m -mx16m Test4646747
+ * @run main/othervm -ms128m -mx128m Test4646747
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.beans.DefaultPersistenceDelegate;

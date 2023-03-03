@@ -24,8 +24,15 @@
 /*
  * @test
  * @bug 6602600
- * @run main/othervm -Xmx8m BasicCancelTest
+ * @run main/othervm -Xmx64m BasicCancelTest
  * @summary Check effectiveness of RemoveOnCancelPolicy
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.util.Random;

@@ -56,13 +56,61 @@ abstract class CKeyStore extends KeyStoreSpi {
 
     public static final class MY extends CKeyStore {
         public MY() {
-            super("MY");
+            super("MY", "CURRENTUSER", false);
+        }
+    }
+
+    public static final class MYCurrentUser extends CKeyStore {
+        public MYCurrentUser() {
+            super("MY", "CURRENTUSER", false);
+        }
+    }
+
+    public static final class MYLocalMachine extends CKeyStore {
+        public MYLocalMachine() {
+            super("MY", "LOCALMACHINE", false);
+        }
+    }
+
+    public static final class MYLocalMachineReadWrite extends CKeyStore {
+        public MYLocalMachineReadWrite() {
+            super("MY", "LOCALMACHINE", false);
+        }
+    }
+
+    public static final class MYLocalMachineReadOnly extends CKeyStore {
+        public MYLocalMachineReadOnly() {
+            super("MY", "LOCALMACHINE", true);
         }
     }
 
     public static final class ROOT extends CKeyStore {
         public ROOT() {
-            super("ROOT");
+            super("ROOT", "CURRENTUSER", false);
+        }
+    }
+
+    public static final class ROOTCurrentUser extends CKeyStore {
+        public ROOTCurrentUser() {
+            super("ROOT", "CURRENTUSER", false);
+        }
+    }
+
+    public static final class ROOTLocalMachine extends CKeyStore {
+        public ROOTLocalMachine() {
+            super("ROOT", "LOCALMACHINE", false);
+        }
+    }
+
+    public static final class ROOTLocalMachineReadWrite extends CKeyStore {
+        public ROOTLocalMachineReadWrite() {
+            super("ROOT", "LOCALMACHINE", false);
+        }
+    }
+
+    public static final class ROOTLocalMachineReadOnly extends CKeyStore {
+        public ROOTLocalMachineReadOnly() {
+            super("ROOT", "LOCALMACHINE", true);
         }
     }
 
@@ -197,7 +245,18 @@ abstract class CKeyStore extends KeyStoreSpi {
      */
     private final String storeName;
 
-    CKeyStore(String storeName) {
+    /*
+     * The keystore location.
+     * Case is not significant.
+     */
+    private final String storeLocation;
+
+    /*
+     * The keystore should be opened with read only access.
+     */
+    private final boolean storeReadOnlyAccess;
+
+    CKeyStore(String storeName, String storeLocation, boolean storeReadOnlyAccess) {
         // Get the compatibility mode
         String prop = AccessController.doPrivileged(
             (PrivilegedAction<String>) () -> System.getProperty(KEYSTORE_COMPATIBILITY_MODE_PROP));
@@ -209,6 +268,8 @@ abstract class CKeyStore extends KeyStoreSpi {
         }
 
         this.storeName = storeName;
+        this.storeLocation = storeLocation;
+        this.storeReadOnlyAccess = storeReadOnlyAccess;
     }
 
     /**
@@ -708,7 +769,7 @@ abstract class CKeyStore extends KeyStoreSpi {
         try {
 
             // Load keys and/or certificate chains
-            loadKeysOrCertificateChains(getName());
+            loadKeysOrCertificateChains(getName(), getLocation(), getReadOnlyAccess());
 
         } catch (KeyStoreException e) {
             throw new IOException(e);
@@ -832,11 +893,28 @@ abstract class CKeyStore extends KeyStoreSpi {
     }
 
     /**
+     * Returns the location of the keystore.
+     */
+    private String getLocation() {
+        return storeLocation;
+    }
+
+    /**
+     * Returns whether the keystore is opened with read only access.
+     */
+    private boolean getReadOnlyAccess() {
+        return storeReadOnlyAccess;
+    }
+
+    /**
      * Load keys and/or certificates from keystore into Collection.
      *
      * @param name Name of keystore.
+     * @param location Location of keystore.
+     * @param readOnlyAccess Open keystore with readonly access.
      */
-    private native void loadKeysOrCertificateChains(String name)
+    private native void loadKeysOrCertificateChains(String name, 
+        String location, boolean readOnlyAccess)
             throws KeyStoreException;
 
     /**

@@ -25,9 +25,16 @@
  * @test
  * @bug 7038914 8016341
  * @summary Verify that the reference handler does not die after an OOME allocating the InterruptedException object
- * @run main/othervm -XX:-UseGCOverheadLimit -Xmx24M -XX:-UseTLAB OOMEInReferenceHandler
+ * @run main/othervm -XX:-UseGCOverheadLimit -Xmx64M -XX:-UseTLAB OOMEInReferenceHandler
  * @author peter.levart@gmail.com
  * @key intermittent
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.lang.ref.*;

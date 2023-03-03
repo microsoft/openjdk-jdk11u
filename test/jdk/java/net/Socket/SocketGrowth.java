@@ -25,7 +25,14 @@
  * @test
  * @bug 7181793
  * @summary getOutputStream create streams that cannot be GC'ed until Socket is closed
- * @run main/othervm -Xmx32m SocketGrowth
+ * @run main/othervm -Xmx64m SocketGrowth
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.io.IOException;

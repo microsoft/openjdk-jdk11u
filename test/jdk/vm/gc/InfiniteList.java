@@ -26,8 +26,16 @@
  * @bug 4098578
  * @summary Check if the VM properly throws OutOfMemoryError
  * @author Sheng Liang
- * @run main/othervm -Xmx25M InfiniteList
+ * @run main/othervm -Xmx128M InfiniteList
  */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
+ */
+
 public class InfiniteList {
     InfiniteList next;
     long data[] = new long[50000];

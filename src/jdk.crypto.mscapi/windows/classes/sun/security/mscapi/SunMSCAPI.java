@@ -84,10 +84,18 @@ public final class SunMSCAPI extends Provider {
                         return new PRNG();
                     }
                 } else if (type.equals("KeyStore")) {
-                    if (algo.equals("Windows-MY")) {
-                        return new CKeyStore.MY();
-                    } else if (algo.equals("Windows-ROOT")) {
-                        return new CKeyStore.ROOT();
+                    if (algo.equals("Windows-MY") || algo.equals("Windows-MY-CURRENTUSER")) {
+                        return new CKeyStore.MYCurrentUser();
+                    } else if (algo.equals("Windows-ROOT") || algo.equals("Windows-ROOT-CURRENTUSER")) {
+                        return new CKeyStore.ROOTCurrentUser();
+                    } else if (algo.equals("Windows-MY-LOCALMACHINE") || algo.equals("Windows-MY-LOCALMACHINE-READWRITE")) {
+                        return new CKeyStore.MYLocalMachineReadWrite();
+                    } else if (algo.equals("Windows-MY-LOCALMACHINE-READONLY")) {
+                        return new CKeyStore.MYLocalMachineReadOnly();
+                    } else if (algo.equals("Windows-ROOT-LOCALMACHINE") || algo.equals("Windows-ROOT-LOCALMACHINE-READWRITE")) {
+                        return new CKeyStore.ROOTLocalMachineReadWrite();
+                    } else if (algo.equals("Windows-ROOT-LOCALMACHINE-READONLY")) {
+                        return new CKeyStore.ROOTLocalMachineReadOnly();
                     }
                 } else if (type.equals("Signature")) {
                     if (algo.equals("NONEwithRSA")) {
@@ -156,9 +164,28 @@ public final class SunMSCAPI extends Provider {
                  * Key store
                  */
                 putService(new ProviderService(p, "KeyStore",
-                           "Windows-MY", "sun.security.mscapi.CKeyStore$MY"));
+                    "Windows-MY", "sun.security.mscapi.CKeyStore$MY"));
                 putService(new ProviderService(p, "KeyStore",
-                           "Windows-ROOT", "sun.security.mscapi.CKeyStore$ROOT"));
+                    "Windows-MY-CURRENTUSER", "sun.security.mscapi.CKeyStore$MYCurrentUser"));
+
+                putService(new ProviderService(p, "KeyStore",   
+                    "Windows-MY-LOCALMACHINE", "sun.security.mscapi.CKeyStore$MYLocalMachine"));
+                putService(new ProviderService(p, "KeyStore",
+                    "Windows-MY-LOCALMACHINE-READWRITE", "sun.security.mscapi.CKeyStore$MYLocalMachineReadWrite"));
+                putService(new ProviderService(p, "KeyStore",   
+                    "Windows-MY-LOCALMACHINE-READONLY", "sun.security.mscapi.CKeyStore$MYLocalMachineReadOnly"));
+
+                putService(new ProviderService(p, "KeyStore",   
+                    "Windows-ROOT", "sun.security.mscapi.CKeyStore$ROOT"));
+                putService(new ProviderService(p, "KeyStore",
+                    "Windows-ROOT-CURRENTUSER", "sun.security.mscapi.CKeyStore$ROOTCurrentUser"));
+
+                putService(new ProviderService(p, "KeyStore",   
+                    "Windows-ROOT-LOCALMACHINE", "sun.security.mscapi.CKeyStore$ROOTLocalMachine"));
+                putService(new ProviderService(p, "KeyStore",
+                    "Windows-ROOT-LOCALMACHINE-READWRITE", "sun.security.mscapi.CKeyStore$ROOTLocalMachineReadWrite"));
+                putService(new ProviderService(p, "KeyStore",   
+                    "Windows-ROOT-LOCALMACHINE-READONLY", "sun.security.mscapi.CKeyStore$ROOTLocalMachineReadOnly"));
 
                 /*
                  * Signature engines

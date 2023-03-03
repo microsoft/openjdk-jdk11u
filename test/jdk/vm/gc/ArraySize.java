@@ -25,7 +25,14 @@
  * @test
  * @bug 4063078
  * @summary Allocating a ridiculously large array should not crash the VM
- * @run main/othervm -Xmx32m -Xms32m ArraySize
+ * @run main/othervm -Xmx64m -Xms64m ArraySize
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 public class ArraySize {

@@ -26,8 +26,15 @@
  * @bug 6531345
  * @summary check for unpacker memory leaks
  * @compile -XDignore.symbol.file Utils.java UnpackerMemoryTest.java
- * @run main/othervm/timeout=1200 -Xmx32m UnpackerMemoryTest
+ * @run main/othervm/timeout=1200 -Xmx64m UnpackerMemoryTest
  * @author ksrini
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.io.File;

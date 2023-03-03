@@ -27,10 +27,16 @@
  * @summary Make sure jar files with large entries (more than max heap size)
  *    can be signed
  * @modules jdk.jartool/sun.security.tools.jarsigner
- * @run main/othervm -Xmx16m LargeJarEntry
+ * @run main/othervm -Xmx256m LargeJarEntry
  * @author Sean Mullan
  */
 
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
+ */
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.jar.JarEntry;

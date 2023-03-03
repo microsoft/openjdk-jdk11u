@@ -25,7 +25,14 @@
  * @test
  * @bug 8028780
  * @summary JDK KRB5 module throws OutOfMemoryError when CCache is corrupt
- * @run main/othervm -Xmx8m GssMemoryIssues
+ * @run main/othervm -Xmx64m GssMemoryIssues
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import org.ietf.jgss.GSSException;

@@ -28,8 +28,15 @@
  *     LoginContext
  * @author Brad Wetmore
  *
- * @run main/othervm -Xmx20m TestProviderLeak
+ * @run main/othervm -Xmx64m TestProviderLeak
  *
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 /*

@@ -26,7 +26,14 @@
  * @summary Ensure that direct memory can be unreserved
  *          as the reserving thread sleeps
  *
- * @run main/othervm -mx16M Chew
+ * @run main/othervm -mx64M Chew
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.nio.*;

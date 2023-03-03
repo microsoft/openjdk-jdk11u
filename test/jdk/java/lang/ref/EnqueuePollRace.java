@@ -25,7 +25,14 @@
  * @bug 8014890
  * @summary Verify that a race between ReferenceQueue.enqueue() and poll() does not occur.
  * @author thomas.schatzl@oracle.com
- * @run main/othervm -Xmx10M EnqueuePollRace
+ * @run main/othervm -Xmx64M EnqueuePollRace
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 
 import java.lang.ref.*;

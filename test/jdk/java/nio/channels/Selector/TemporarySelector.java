@@ -23,8 +23,15 @@
 
 /* @test
  * @bug 6645197
- * @run main/othervm -Xmx16m TemporarySelector
+ * @run main/othervm -Xmx64m TemporarySelector
  * @summary Timed read with socket adaptor throws ClosedSelectorException if temporary selector GC'ed.
+ */
+
+/*
+ * The max heap size for this test was increased to accommodate
+ * for zgc's larger heap requirement on jdk11. Otherwise, the test
+ * would just fail right away due to the heap being too small.
+ * Consult the file's history for more details.
  */
 import java.io.IOException;
 import java.net.InetSocketAddress;
