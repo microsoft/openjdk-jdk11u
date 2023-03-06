@@ -502,8 +502,11 @@ JNIEXPORT void JNICALL Java_sun_security_mscapi_CKeyStore_loadKeysOrCertificateC
             else
             {
                 if (bCallerFreeProv == TRUE) {
-                    ::CryptReleaseContext(hCryptProv, NULL); // deprecated
-                    bCallerFreeProv = FALSE;
+                    if ((dwKeySpec & CERT_NCRYPT_KEY_SPEC) == CERT_NCRYPT_KEY_SPEC) {
+                        NCryptFreeObject(hCryptProv);
+                    } else {
+                        ::CryptReleaseContext(hCryptProv, NULL); // deprecated
+                    }
                 }
 
                 // Second, acquire the key normally (not silently)
