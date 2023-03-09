@@ -32,6 +32,7 @@
 #include "oops/oop.hpp"
 #include "oops/weakHandle.hpp"
 #include "utilities/concurrentHashTable.hpp"
+#include "utilities/tableStatistics.hpp"
 
 template <class T, class N> class CompactHashtable;
 class CompactStringTableWriter;
@@ -101,6 +102,7 @@ private:
   // The string table
   static StringTable* the_table() { return _the_table; }
   size_t table_size(Thread* thread = NULL);
+  TableStatistics get_table_statistics();
 
   static OopStorage* weak_storage() { return the_table()->_weak_handles; }
 

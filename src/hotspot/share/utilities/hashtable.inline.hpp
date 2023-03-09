@@ -43,6 +43,7 @@ template <MEMFLAGS F> inline BasicHashtable<F>::BasicHashtable(int table_size, i
   for (int index = 0; index < _table_size; index++) {
     _buckets[index].clear();
   }
+  _stats_rate = TableRateStatistics();
 }
 
 
@@ -52,6 +53,7 @@ template <MEMFLAGS F> inline BasicHashtable<F>::BasicHashtable(int table_size, i
   // Called on startup, no locking needed
   initialize(table_size, entry_size, number_of_entries);
   _buckets = buckets;
+  _stats_rate = TableRateStatistics();
 }
 
 
@@ -93,6 +95,11 @@ template <MEMFLAGS F> inline BasicHashtableEntry<F>* HashtableBucket<F>::get_ent
 
 template <MEMFLAGS F> inline void BasicHashtable<F>::set_entry(int index, BasicHashtableEntry<F>* entry) {
   _buckets[index].set_entry(entry);
+  if (entry != NULL) {
+    JFR_ONLY(_stats_rate.add();)
+  } else {
+    JFR_ONLY(_stats_rate.remove();)
+  }
 }
 
 
@@ -100,6 +107,7 @@ template <MEMFLAGS F> inline void BasicHashtable<F>::add_entry(int index, BasicH
   entry->set_next(bucket(index));
   _buckets[index].set_entry(entry);
   ++_number_of_entries;
+  JFR_ONLY(_stats_rate.add();)
 }
 
 template <MEMFLAGS F> inline void BasicHashtable<F>::free_entry(BasicHashtableEntry<F>* entry) {

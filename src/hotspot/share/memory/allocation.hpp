@@ -131,6 +131,7 @@ enum MemoryType {
   mtTest,              // Test type for verifying NMT
   mtTracing,           // memory used for Tracing
   mtLogging,           // memory for logging
+  mtStatistics,        // memory for statistics
   mtArguments,         // memory for argument processing
   mtModule,            // memory for module processing
   mtSynchronizer,      // memory for synchronization primitives

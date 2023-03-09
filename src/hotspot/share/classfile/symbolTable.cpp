@@ -562,6 +562,10 @@ void SymbolTable::verify() {
   }
 }
 
+TableStatistics SymbolTable::get_table_statistics() {
+  return the_table()->statistics_calculate();
+}
+
 void SymbolTable::dump(outputStream* st, bool verbose) {
   if (!verbose) {
     the_table()->print_table_statistics(st, "SymbolTable");

@@ -28,6 +28,7 @@
 #include "memory/allocation.hpp"
 #include "oops/symbol.hpp"
 #include "utilities/hashtable.hpp"
+#include "utilities/tableStatistics.hpp"
 
 // The symbol table holds all Symbol*s and corresponding interned strings.
 // Symbol*s and literal strings should be canonicalized.
@@ -168,6 +169,7 @@ public:
 
   // The symbol table
   static SymbolTable* the_table() { return _the_table; }
+  TableStatistics get_table_statistics();
 
   // Size of one bucket in the string table.  Used when checking for rollover.
   static uint bucket_size() { return sizeof(HashtableBucket<mtSymbol>); }

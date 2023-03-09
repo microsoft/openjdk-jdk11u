@@ -25,6 +25,8 @@
 #ifndef SHARE_UTILITIES_CONCURRENT_HASH_TABLE_HPP
 #define SHARE_UTILITIES_CONCURRENT_HASH_TABLE_HPP
 
+#include "utilities/tableStatistics.hpp"
+
 // A mostly concurrent-hash-table where the read-side is wait-free, inserts are
 // CAS and deletes mutual exclude each other on per bucket-basis. VALUE is the
 // type kept inside each Node and CONFIG contains hash and allocation methods.
@@ -374,6 +376,8 @@ class ConcurrentHashTable : public CHeapObj<F> {
 
   ~ConcurrentHashTable();
 
+  TableRateStatistics _stats_rate;
+
   size_t get_size_log2(Thread* thread);
   size_t get_node_size() const { return sizeof(Node); }
   bool is_max_size_reached() { return _size_limit_reached; }
@@ -483,6 +487,15 @@ class ConcurrentHashTable : public CHeapObj<F> {
   // DELETE_FUNC is called, when the resize lock is successfully obtained.
   template <typename EVALUATE_FUNC, typename DELETE_FUNC>
   void bulk_delete(Thread* thread, EVALUATE_FUNC& eval_f, DELETE_FUNC& del_f);
+
+  // Calcuate statistics. Item sizes are calculated with VALUE_SIZE_FUNC.
+  template <typename VALUE_SIZE_FUNC>
+  TableStatistics statistics_calculate(Thread* thread, VALUE_SIZE_FUNC& vs_f);
+
+  // Gets statistics if available, if not return old one. Item sizes are calculated with
+  // VALUE_SIZE_FUNC.
+  template <typename VALUE_SIZE_FUNC>
+  TableStatistics statistics_get(Thread* thread, VALUE_SIZE_FUNC& vs_f, TableStatistics old);
 
   // Writes statistics to the outputStream. Item sizes are calculated with
   // VALUE_SIZE_FUNC.
