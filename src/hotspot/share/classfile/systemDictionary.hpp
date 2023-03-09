@@ -382,6 +382,9 @@ public:
   // System loader lock
   static oop system_loader_lock()           { return _system_loader_lock_obj; }
 
+  // Protection Domain Table
+  static ProtectionDomainCacheTable* pd_cache_table() { return _pd_cache_table; }
+
 public:
   // Sharing support.
   static void reorder_dictionary_for_sharing() NOT_CDS_RETURN;
@@ -731,6 +734,12 @@ private:
   static oop  _java_platform_loader;
 
   static bool _has_checkPackageAccess;
+
+  
+public:
+  static TableStatistics placeholders_statistics();
+  static TableStatistics loader_constraints_statistics();
+  static TableStatistics protection_domain_cache_statistics();
 };
 
 #endif // SHARE_VM_CLASSFILE_SYSTEMDICTIONARY_HPP
