@@ -54,63 +54,69 @@ import sun.security.util.Debug;
  */
 abstract class CKeyStore extends KeyStoreSpi {
 
+    public static final class SST extends CKeyStore {
+        public SST() {
+            super("SST", "SST", false, true);
+        }
+    }
+
     public static final class MY extends CKeyStore {
         public MY() {
-            super("MY", "CURRENTUSER", false);
+            super("MY", "CURRENTUSER", false, false);
         }
     }
 
     public static final class MYCurrentUser extends CKeyStore {
         public MYCurrentUser() {
-            super("MY", "CURRENTUSER", false);
+            super("MY", "CURRENTUSER", false, false);
         }
     }
 
     public static final class MYLocalMachine extends CKeyStore {
         public MYLocalMachine() {
-            super("MY", "LOCALMACHINE", false);
+            super("MY", "LOCALMACHINE", false, false);
         }
     }
 
     public static final class MYLocalMachineReadWrite extends CKeyStore {
         public MYLocalMachineReadWrite() {
-            super("MY", "LOCALMACHINE", false);
+            super("MY", "LOCALMACHINE", false, false);
         }
     }
 
     public static final class MYLocalMachineReadOnly extends CKeyStore {
         public MYLocalMachineReadOnly() {
-            super("MY", "LOCALMACHINE", true);
+            super("MY", "LOCALMACHINE", true, false);
         }
     }
 
     public static final class ROOT extends CKeyStore {
         public ROOT() {
-            super("ROOT", "CURRENTUSER", false);
+            super("ROOT", "CURRENTUSER", false, false);
         }
     }
 
     public static final class ROOTCurrentUser extends CKeyStore {
         public ROOTCurrentUser() {
-            super("ROOT", "CURRENTUSER", false);
+            super("ROOT", "CURRENTUSER", false, false);
         }
     }
 
     public static final class ROOTLocalMachine extends CKeyStore {
         public ROOTLocalMachine() {
-            super("ROOT", "LOCALMACHINE", false);
+            super("ROOT", "LOCALMACHINE", false, false);
         }
     }
 
     public static final class ROOTLocalMachineReadWrite extends CKeyStore {
         public ROOTLocalMachineReadWrite() {
-            super("ROOT", "LOCALMACHINE", false);
+            super("ROOT", "LOCALMACHINE", false, false);
         }
     }
 
     public static final class ROOTLocalMachineReadOnly extends CKeyStore {
         public ROOTLocalMachineReadOnly() {
-            super("ROOT", "LOCALMACHINE", true);
+            super("ROOT", "LOCALMACHINE", true, false);
         }
     }
 
@@ -256,7 +262,9 @@ abstract class CKeyStore extends KeyStoreSpi {
      */
     private final boolean storeReadOnlyAccess;
 
-    CKeyStore(String storeName, String storeLocation, boolean storeReadOnlyAccess) {
+    private final boolean requiresKeyStoreFromFile;
+
+    CKeyStore(String storeName, String storeLocation, boolean storeReadOnlyAccess, boolean requiresKeyStoreFromFile) {
         // Get the compatibility mode
         String prop = AccessController.doPrivileged(
             (PrivilegedAction<String>) () -> System.getProperty(KEYSTORE_COMPATIBILITY_MODE_PROP));
@@ -270,6 +278,7 @@ abstract class CKeyStore extends KeyStoreSpi {
         this.storeName = storeName;
         this.storeLocation = storeLocation;
         this.storeReadOnlyAccess = storeReadOnlyAccess;
+        this.requiresKeyStoreFromFile = requiresKeyStoreFromFile;
     }
 
     /**
@@ -746,8 +755,12 @@ abstract class CKeyStore extends KeyStoreSpi {
      */
     public void engineLoad(InputStream stream, char[] password)
             throws IOException, NoSuchAlgorithmException, CertificateException {
-        if (stream != null && !keyStoreCompatibilityMode) {
+        if (stream != null && !getRequiresKeyStoreFromFile() && !keyStoreCompatibilityMode) {
             throw new IOException("Keystore input stream must be null");
+        }
+        else if (stream == null && getRequiresKeyStoreFromFile())
+        {
+            throw new IOException("Keystore input stream cannot be null");
         }
 
         if (password != null && !keyStoreCompatibilityMode) {
@@ -768,8 +781,15 @@ abstract class CKeyStore extends KeyStoreSpi {
 
         try {
 
-            // Load keys and/or certificate chains
-            loadKeysOrCertificateChains(getName(), getLocation(), getReadOnlyAccess());
+            if (stream != null && getRequiresKeyStoreFromFile()) {
+                // Load keys and/or certificate chains from input stream
+                byte[] blob = stream.readAllBytes();
+                loadKeysOrCertificateChainsFromMemory(blob, blob.length, getReadOnlyAccess());
+            }
+            else {
+                // Load keys and/or certificate chains
+                loadKeysOrCertificateChains(getName(), getLocation(), getReadOnlyAccess());
+            }
 
         } catch (KeyStoreException e) {
             throw new IOException(e);
@@ -906,6 +926,10 @@ abstract class CKeyStore extends KeyStoreSpi {
         return storeReadOnlyAccess;
     }
 
+    private boolean getRequiresKeyStoreFromFile() {
+        return requiresKeyStoreFromFile;
+    }
+
     /**
      * Load keys and/or certificates from keystore into Collection.
      *
@@ -916,6 +940,17 @@ abstract class CKeyStore extends KeyStoreSpi {
     private native void loadKeysOrCertificateChains(String name, 
         String location, boolean readOnlyAccess)
             throws KeyStoreException;
+
+    /**
+     * Load keys and/or certificates from inmemory keystore into Collection.
+     *
+     * @param keystoreBlob In memory keystore.
+     * @param keystoreBlobSize Size in bytes of in memory keystore
+     * @param readOnlyAccess Open keystore with readonly access.
+     */
+    private native void loadKeysOrCertificateChainsFromMemory(byte[] keystoreBlob, 
+    int keystoreBlobSize, boolean readOnlyAccess)
+        throws KeyStoreException;
 
     /**
      * Stores a DER-encoded certificate into the certificate store
