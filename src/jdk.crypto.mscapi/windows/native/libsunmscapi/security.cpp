@@ -382,31 +382,6 @@ JNIEXPORT jbyteArray JNICALL Java_sun_security_mscapi_PRNG_generateSeed
     return result;
 }
 
-
-/*
- * Class:     sun_security_mscapi_CKeyStore
- * Method:    loadKeysOrCertificateChains
- * Signature: (Ljava/lang/String;Ljava/lang/String;Z)V
- */
-JNIEXPORT void JNICALL Java_sun_security_mscapi_CKeyStore_loadKeysOrCertificateChains
-  (JNIEnv *env, jobject obj, jstring jCertStoreName, jstring jCertStoreLocation, 
-    jboolean jCertStoreReadOnlyAccess)
-{
-    /**
-     * Certificate in cert store has enhanced key usage extension
-     * property (or EKU property) that is not part of the certificate itself. To determine
-     * if the certificate should be returned, both the enhanced key usage in certificate
-     * extension block and the extension property stored along with the certificate in
-     * certificate store should be examined. Otherwise, we won't be able to determine
-     * the proper key usage from the Java side because the information is not stored as
-     * part of the encoded certificate.
-     */
-
-    const char* pszCertStoreName = NULL;
-    const char* pszCertStoreLocation = NULL;
-    HCERTSTORE hCertStore = NULL;
-
-
 /*
  * Class:     sun_security_mscapi_CKeyStore
  * Method:    loadKeysOrCertificateChains
