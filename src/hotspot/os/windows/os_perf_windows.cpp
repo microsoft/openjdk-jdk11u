@@ -1449,3 +1449,81 @@ bool NetworkPerformanceInterface::initialize() {
 int NetworkPerformanceInterface::network_utilization(NetworkInterface** network_interfaces) const {
   return _impl->network_utilization(network_interfaces);
 }
+
+class FileIOInformationInterface::FileIOInformation : public CHeapObj<mtInternal>{
+  friend class FileIOInformationInterface;
+  private:
+  FileIOInformation();
+  NONCOPYABLE(FileIOInformation); 
+  bool initialize();
+  ~FileIOInformation(); 
+  int64_t read_file_counter(const char* counter) const;
+  int fileIO_utilization(FileIOInformationData* fileIO_information) const;
+
+};
+FileIOInformationInterface::FileIOInformation::FileIOInformation() {
+}
+
+
+bool FileIOInformationInterface::FileIOInformation::initialize() {
+  return true;
+}
+
+FileIOInformationInterface::FileIOInformation::~FileIOInformation() {
+}
+
+FileIOInformationInterface::FileIOInformationInterface() {
+  _impl = NULL;
+}
+
+FileIOInformationInterface::~FileIOInformationInterface() {
+  if (_impl != NULL) {
+    delete _impl;
+  }
+}
+
+bool FileIOInformationInterface::initialize() {
+  _impl = new FileIOInformationInterface::FileIOInformation();
+  return _impl != NULL && _impl->initialize();
+}
+
+
+int FileIOInformationInterface::FileIOInformation::fileIO_utilization(FileIOInformationData* fileIO_information) const
+{
+    FileIOInformation* ret;
+    int64_t readBytes = read_file_counter("rchar");
+    int64_t writeBytes = read_file_counter("wchar");
+    ret = new FileIOInformation(readBytes,writeBytes);
+    fileIO_information->set_read_bytes(readBytes);
+    fileIO_information->set_write_bytes(writeBytes);
+
+  return OS_OK;
+
+}
+
+int64_t FileIOInformationInterface::FileIOInformation::read_file_counter(const char* counter) const {
+//windows code to get the information? 
+ int64_t value;
+  HANDLE hProcess = GetCurrentProcess();
+  IO_COUNTERS ioCounters;
+    if (!GetProcessIoCounters(hProcess, &ioCounters)) {
+          std::cerr << "Failed to get IO counters. Error code = " << GetLastError() << std::endl;
+          return 1;
+      }
+
+  std::cout << "Read transfer count: " << ioCounters.ReadTransferCount << std::endl;
+  std::cout << "Write transfer count: " << ioCounters.WriteTransferCount << std::endl;
+  if(counter=="rchar"){
+    value=ioCounters.ReadTransferCount;
+  }
+  else{
+    value=ioCounters.WriteTransferCount;
+  }
+  return value;
+
+
+}
+
+int FileIOInformationInterface::fileIO_utilization(FileIOInformationData* fileIO_information) const {
+  return _impl->fileIO_utilization(fileIO_information);
+}

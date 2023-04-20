@@ -234,6 +234,36 @@ class NetworkInterface : public ResourceObj {
   }
 };
 
+class FileIOInformationData : public ResourceObj {
+  private:
+    uint64_t _read_bytes;
+    uint64_t _write_bytes;
+  
+  NONCOPYABLE(FileIOInformationData);
+  
+  public: 
+  FileIOInformationData(uint64_t read_bytes, uint64_t write_bytes) {
+    _read_bytes = read_bytes;
+    _write_bytes = write_bytes;
+  }
+
+  void set_read_bytes(uint64_t read_bytes){
+    _read_bytes = read_bytes;
+  }
+
+  uint64_t get_read_bytes() const{
+    return _read_bytes;
+  }
+
+ void set_write_bytes(uint64_t write_bytes){
+    _write_bytes = write_bytes;
+  }
+  uint64_t get_write_bytes() const {
+    return _write_bytes;
+  }
+
+};
+
 class CPUInformationInterface : public CHeapObj<mtInternal> {
  private:
   CPUInformation* _cpu_info;
@@ -285,6 +315,20 @@ class NetworkPerformanceInterface : public CHeapObj<mtInternal> {
   bool initialize();
   ~NetworkPerformanceInterface();
   int network_utilization(NetworkInterface** network_interfaces) const;
+};
+
+
+class FileIOInformationInterface : public CHeapObj<mtInternal> {
+ private:
+  class FileIOInformation;
+  FileIOInformation* _impl;
+  NONCOPYABLE(FileIOInformationInterface);
+
+ public:
+  FileIOInformationInterface();
+  bool initialize();
+  ~FileIOInformationInterface();
+  int fileIO_utilization(FileIOInformationData* fileIO_information) const;
 };
 
 #endif // SHARE_VM_RUNTIME_OS_PERF_HPP

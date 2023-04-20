@@ -670,6 +670,11 @@
     <Field type="long" contentType="bits-per-second" name="writeRate" label="Write Rate" description="Number of outgoing bits per second"/>
   </Event>
 
+  <Event name="FileUtilization" category="Operating System, Java Application" label="File Utilization" period="everyChunk">    
+    <Field type="long" contentType="bytes-per-second" name="readRate" label="Read Rate" description="Number of incoming bytes per second"/>
+    <Field type="long" contentType="bytes-per-second" name="writeRate" label="Write Rate" description="Number of outgoing bytes per second"/>
+  </Event>
+
   <Event name="JavaThreadStatistics" category="Java Application, Statistics" label="Java Thread Statistics" period="everyChunk">
     <Field type="long" name="activeCount" label="Active Threads" description="Number of live active threads including both daemon and non-daemon threads" />
     <Field type="long" name="daemonCount" label="Daemon Threads" description="Number of live daemon threads" />

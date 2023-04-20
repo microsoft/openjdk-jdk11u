@@ -31,6 +31,7 @@ class CPUInformation;
 class EnvironmentVariable;
 class NetworkInterface;
 class SystemProcess;
+class FileIOInformationData;
 
 class JfrOSInterface: public JfrCHeapObj {
   friend class JfrRecorder;
@@ -56,6 +57,7 @@ class JfrOSInterface: public JfrCHeapObj {
   static int generate_initial_environment_variable_events();
   static int system_processes(SystemProcess** system_processes, int* no_of_sys_processes);
   static int network_utilization(NetworkInterface** network_interfaces);
+  static int fileIO_utilization(FileIOInformationData* fileIO_information);
 };
 
 #endif // SHARE_VM_JFR_PERIODIC_JFROSINTERFACE_HPP

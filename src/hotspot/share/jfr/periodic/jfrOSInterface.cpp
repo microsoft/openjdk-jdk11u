@@ -69,6 +69,7 @@ class JfrOSInterface::JfrOSInterfaceImpl : public JfrCHeapObj {
   CPUPerformanceInterface* _cpu_perf_interface;
   SystemProcessInterface*  _system_process_interface;
   NetworkPerformanceInterface* _network_performance_interface;
+  FileIOInformationInterface* _fileIO_Information_interface;
 
   JfrOSInterfaceImpl();
   bool initialize();
@@ -91,11 +92,15 @@ class JfrOSInterface::JfrOSInterfaceImpl : public JfrCHeapObj {
   int system_processes(SystemProcess** system_processes, int* no_of_sys_processes);
 
   int network_utilization(NetworkInterface** network_interfaces) const;
+
+  int fileIO_utilization(FileIOInformationData* fileIO_information) const;
 };
 
 JfrOSInterface::JfrOSInterfaceImpl::JfrOSInterfaceImpl() : _cpu_info_interface(NULL),
                                                            _cpu_perf_interface(NULL),
-                                                           _system_process_interface(NULL) {}
+                                                           _system_process_interface(NULL),
+                                                          _network_performance_interface(NULL),
+                                                          _fileIO_Information_interface(NULL) {}
 
 bool JfrOSInterface::JfrOSInterfaceImpl::initialize() {
   _cpu_info_interface = new CPUInformationInterface();
@@ -110,8 +115,12 @@ bool JfrOSInterface::JfrOSInterfaceImpl::initialize() {
   if (!(_system_process_interface != NULL && _system_process_interface->initialize())) {
     return false;
   }
+  _fileIO_Information_interface = new FileIOInformationInterface();
+  if (!(_fileIO_Information_interface != NULL && _fileIO_Information_interface->initialize())) {
+    return false;
+  }
   _network_performance_interface = new NetworkPerformanceInterface();
-  return _network_performance_interface != NULL && _network_performance_interface->initialize();
+  return _network_performance_interface != NULL && _network_performance_interface->initialize();  
 }
 
 JfrOSInterface::JfrOSInterfaceImpl::~JfrOSInterfaceImpl(void) {
@@ -130,6 +139,10 @@ JfrOSInterface::JfrOSInterfaceImpl::~JfrOSInterfaceImpl(void) {
   if (_network_performance_interface != NULL) {
     delete _network_performance_interface;
     _network_performance_interface = NULL;
+  }
+   if (_fileIO_Information_interface != NULL) {
+    delete _fileIO_Information_interface;
+    _fileIO_Information_interface = NULL;
   }
 }
 
@@ -163,6 +176,10 @@ int JfrOSInterface::JfrOSInterfaceImpl::system_processes(SystemProcess** system_
 
 int JfrOSInterface::JfrOSInterfaceImpl::network_utilization(NetworkInterface** network_interfaces) const {
   return _network_performance_interface->network_utilization(network_interfaces);
+}
+
+int JfrOSInterface::JfrOSInterfaceImpl::fileIO_utilization(FileIOInformationData* fileIO_information) const {
+  return _fileIO_Information_interface->fileIO_utilization(fileIO_information);
 }
 
 // assigned char* is RESOURCE_HEAP_ALLOCATED
@@ -274,4 +291,8 @@ int JfrOSInterface::system_processes(SystemProcess** sys_processes, int* no_of_s
 
 int JfrOSInterface::network_utilization(NetworkInterface** network_interfaces) {
   return instance()._impl->network_utilization(network_interfaces);
+}
+
+int JfrOSInterface::fileIO_utilization(FileIOInformationData* fileIO_information) {
+  return instance()._impl->fileIO_utilization(fileIO_information);
 }

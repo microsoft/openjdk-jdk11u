@@ -38,6 +38,7 @@
 #include "jfr/periodic/jfrThreadCPULoadEvent.hpp"
 #include "jfr/periodic/jfrThreadDumpEvent.hpp"
 #include "jfr/periodic/jfrNetworkUtilization.hpp"
+#include "jfr/periodic/jfrFileUtilization.hpp"
 #include "jfr/recorder/jfrRecorder.hpp"
 #include "jfr/support/jfrThreadId.hpp"
 #include "jfr/utilities/jfrTime.hpp"
@@ -191,6 +192,14 @@ TRACE_REQUEST_FUNC(ThreadCPULoad) {
 
 TRACE_REQUEST_FUNC(NetworkUtilization) {
   JfrNetworkUtilization::send_events();
+}
+
+// TRACE_REQUEST_FUNC(FileUtilization) {
+//   JfrFileUtilization::send_events();
+// }
+
+TRACE_REQUEST_FUNC(FileUtilization) {
+  JfrFileUtilization::send_events();
 }
 
 TRACE_REQUEST_FUNC(CPUTimeStampCounter) {

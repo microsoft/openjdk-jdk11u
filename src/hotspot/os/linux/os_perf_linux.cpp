@@ -1015,7 +1015,7 @@ int NetworkPerformanceInterface::NetworkPerformance::network_utilization(Network
 
     int64_t bytes_in = read_counter(cur_address->ifa_name, "rx_bytes");
     int64_t bytes_out = read_counter(cur_address->ifa_name, "tx_bytes");
-
+    
     NetworkInterface* cur = new NetworkInterface(cur_address->ifa_name, bytes_in, bytes_out, ret);
     ret = cur;
   }
@@ -1044,3 +1044,94 @@ bool NetworkPerformanceInterface::initialize() {
 int NetworkPerformanceInterface::network_utilization(NetworkInterface** network_interfaces) const {
   return _impl->network_utilization(network_interfaces);
 }
+
+
+class FileIOInformationInterface::FileIOInformation : public CHeapObj<mtInternal>{
+  friend class FileIOInformationInterface;
+  private:
+  FileIOInformation();
+  //NONCOPYABLE(FileIOInformation); 
+  bool initialize();
+  ~FileIOInformation(); 
+  int64_t read_file_counter(const char* counter) const;
+  int fileIO_utilization(FileIOInformationData* fileIO_information) const;
+
+};
+FileIOInformationInterface::FileIOInformation::FileIOInformation() {
+}
+
+
+bool FileIOInformationInterface::FileIOInformation::initialize() {
+  return true;
+}
+
+FileIOInformationInterface::FileIOInformation::~FileIOInformation() {
+}
+
+FileIOInformationInterface::FileIOInformationInterface() {
+  _impl = NULL;
+}
+
+FileIOInformationInterface::~FileIOInformationInterface() {
+  if (_impl != NULL) {
+    delete _impl;
+  }
+}
+
+bool FileIOInformationInterface::initialize() {
+  _impl = new FileIOInformationInterface::FileIOInformation();
+  return _impl != NULL && _impl->initialize();
+}
+
+
+int FileIOInformationInterface::FileIOInformation::fileIO_utilization(FileIOInformationData* fileIO_information) const
+{
+  
+    int64_t readBytes = read_file_counter("rchar");
+    int64_t writeBytes = read_file_counter("wchar");    
+    fileIO_information->set_read_bytes(readBytes);
+    fileIO_information->set_write_bytes(writeBytes);
+
+  return OS_OK;
+
+}
+
+int64_t FileIOInformationInterface::FileIOInformation::read_file_counter(const char* counter) const {
+  char buf[128];
+
+ /// snprintf(buf, sizeof(buf), "/sys/class/net/%s/statistics/%s", iface, counter);
+ int64_t value;
+
+  int fd = os::open("/proc/self/io", O_RDONLY, 0);
+  if (fd == -1) {
+    return -1;
+  }
+
+  ssize_t num_bytes = read(fd, buf, sizeof(buf));
+  close(fd);
+  if ((num_bytes == -1) || (num_bytes >= static_cast<ssize_t>(sizeof(buf))) || (num_bytes < 1)) {
+    return -1;
+  }
+
+  buf[num_bytes] = '\0';
+  int val;
+  char *found_string = strstr(buf, counter);
+  if (found_string != NULL) {   
+    if(counter=="rchar")  {
+      sscanf(found_string, "rchar:%d", &val);
+    } 
+    else{
+       sscanf(found_string, "wchar:%d", &val);
+    }
+         
+    }
+  value = val;  
+  return value;
+}
+
+int FileIOInformationInterface::fileIO_utilization(FileIOInformationData* fileIO_information) const {
+  return _impl->fileIO_utilization(fileIO_information);
+}
+
+
+
