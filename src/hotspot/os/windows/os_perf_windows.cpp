@@ -37,6 +37,7 @@
 #include <psapi.h>
 #include <TlHelp32.h>
 
+
 /*
  * Windows provides a vast plethora of performance objects and counters,
  * consumption of which is assisted using the Performance Data Helper (PDH) interface.
@@ -1490,38 +1491,42 @@ bool FileIOInformationInterface::initialize() {
 
 int FileIOInformationInterface::FileIOInformation::fileIO_utilization(FileIOInformationData* fileIO_information) const
 {
-    FileIOInformation* ret;
+   
     int64_t readBytes = read_file_counter("rchar");
-    int64_t writeBytes = read_file_counter("wchar");
-    ret = new FileIOInformation(readBytes,writeBytes);
+    int64_t writeBytes = read_file_counter("wchar");  
     fileIO_information->set_read_bytes(readBytes);
     fileIO_information->set_write_bytes(writeBytes);
-
   return OS_OK;
 
 }
 
 int64_t FileIOInformationInterface::FileIOInformation::read_file_counter(const char* counter) const {
 //windows code to get the information? 
- int64_t value;
-  HANDLE hProcess = GetCurrentProcess();
-  IO_COUNTERS ioCounters;
-    if (!GetProcessIoCounters(hProcess, &ioCounters)) {
-          std::cerr << "Failed to get IO counters. Error code = " << GetLastError() << std::endl;
-          return 1;
-      }
+    // Get a handle to the process you want to monitor
+   int64_t ret;
+    DWORD pid = GetCurrentProcessId();
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    if (hProcess == NULL) {      
+        return 1;
+    }
 
-  std::cout << "Read transfer count: " << ioCounters.ReadTransferCount << std::endl;
-  std::cout << "Write transfer count: " << ioCounters.WriteTransferCount << std::endl;
-  if(counter=="rchar"){
-    value=ioCounters.ReadTransferCount;
-  }
-  else{
-    value=ioCounters.WriteTransferCount;
-  }
-  return value;
+    // Get the I/O counters for the process
+    IO_COUNTERS ioCounters;
+    BOOL success = GetProcessIoCounters(hProcess, &ioCounters);
+    if (!success) {     
+        CloseHandle(hProcess);
+        return 1;
+    }
 
-
+    if(counter == "rchar"){
+      ret = ioCounters.ReadTransferCount;      
+    }
+    else{
+      ret = ioCounters.WriteTransferCount;  
+    }
+    // Close the process handle
+    CloseHandle(hProcess);
+    return ret;
 }
 
 int FileIOInformationInterface::fileIO_utilization(FileIOInformationData* fileIO_information) const {
