@@ -31,6 +31,8 @@ import java.nio.ByteBuffer;
 import jdk.jfr.events.FileForceEvent;
 import jdk.jfr.events.FileReadEvent;
 import jdk.jfr.events.FileWriteEvent;
+import jdk.jfr.events.FileReadIOStatisticsEvent;
+import jdk.jfr.events.FileWriteIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -81,6 +83,7 @@ final class FileChannelImplInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -105,6 +108,7 @@ final class FileChannelImplInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -129,6 +133,7 @@ final class FileChannelImplInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -149,6 +154,7 @@ final class FileChannelImplInstrumentor {
             event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
         return bytesWritten;
@@ -170,6 +176,7 @@ final class FileChannelImplInstrumentor {
             event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
         return bytesWritten;
@@ -190,6 +197,7 @@ final class FileChannelImplInstrumentor {
             event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
         return bytesWritten;

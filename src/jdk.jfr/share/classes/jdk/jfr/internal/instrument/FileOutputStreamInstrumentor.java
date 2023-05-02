@@ -28,6 +28,7 @@ package jdk.jfr.internal.instrument;
 import java.io.IOException;
 
 import jdk.jfr.events.FileWriteEvent;
+import jdk.jfr.events.FileWriteIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -55,6 +56,7 @@ final class FileOutputStreamInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }
@@ -74,6 +76,7 @@ final class FileOutputStreamInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }
@@ -93,6 +96,7 @@ final class FileOutputStreamInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }

@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import jdk.jfr.events.FileReadEvent;
 import jdk.jfr.events.FileWriteEvent;
+import jdk.jfr.events.FileReadIOStatisticsEvent;
+import jdk.jfr.events.FileWriteIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -60,6 +62,7 @@ final class RandomAccessFileInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return result;
@@ -84,6 +87,7 @@ final class RandomAccessFileInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -108,6 +112,7 @@ final class RandomAccessFileInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -128,6 +133,7 @@ final class RandomAccessFileInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }
@@ -147,6 +153,7 @@ final class RandomAccessFileInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }
@@ -166,6 +173,7 @@ final class RandomAccessFileInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
             event.reset();
         }
     }

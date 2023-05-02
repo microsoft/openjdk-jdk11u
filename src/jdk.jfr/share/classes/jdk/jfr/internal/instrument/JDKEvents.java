@@ -36,7 +36,9 @@ import jdk.jfr.events.ExceptionStatisticsEvent;
 import jdk.jfr.events.ExceptionThrownEvent;
 import jdk.jfr.events.FileForceEvent;
 import jdk.jfr.events.FileReadEvent;
+import jdk.jfr.events.FileReadIOStatisticsEvent;
 import jdk.jfr.events.FileWriteEvent;
+import jdk.jfr.events.FileWriteIOStatisticsEvent;
 import jdk.jfr.events.DeserializationEvent;
 import jdk.jfr.events.SecurityPropertyModificationEvent;
 import jdk.jfr.events.SocketReadEvent;
@@ -55,45 +57,51 @@ import jdk.jfr.internal.Utils;
 public final class JDKEvents {
 
     private static final Class<?>[] mirrorEventClasses = {
-        DeserializationEvent.class,
-        SecurityPropertyModificationEvent.class,
-        TLSHandshakeEvent.class,
-        X509CertificateEvent.class,
-        X509ValidationEvent.class
+            DeserializationEvent.class,
+            SecurityPropertyModificationEvent.class,
+            TLSHandshakeEvent.class,
+            X509CertificateEvent.class,
+            X509ValidationEvent.class
     };
 
     private static final Class<?>[] eventClasses = {
-        FileForceEvent.class,
-        FileReadEvent.class,
-        FileWriteEvent.class,
-        SocketReadEvent.class,
-        SocketWriteEvent.class,
-        ExceptionThrownEvent.class,
-        ExceptionStatisticsEvent.class,
-        ErrorThrownEvent.class,
-        ActiveSettingEvent.class,
-        ActiveRecordingEvent.class,
-        jdk.internal.event.DeserializationEvent.class,
-        jdk.internal.event.SecurityPropertyModificationEvent.class,
-        jdk.internal.event.TLSHandshakeEvent.class,
-        jdk.internal.event.X509CertificateEvent.class,
-        jdk.internal.event.X509ValidationEvent.class
+            FileForceEvent.class,
+            FileReadEvent.class,
+            FileWriteEvent.class,
+            FileReadIOStatisticsEvent.class,
+            FileWriteIOStatisticsEvent.class,
+            SocketReadEvent.class,
+            SocketWriteEvent.class,
+            ExceptionThrownEvent.class,
+            ExceptionStatisticsEvent.class,
+            ErrorThrownEvent.class,
+            ActiveSettingEvent.class,
+            ActiveRecordingEvent.class,
+            jdk.internal.event.DeserializationEvent.class,
+            jdk.internal.event.SecurityPropertyModificationEvent.class,
+            jdk.internal.event.TLSHandshakeEvent.class,
+            jdk.internal.event.X509CertificateEvent.class,
+            jdk.internal.event.X509ValidationEvent.class
     };
 
-    // This is a list of the classes with instrumentation code that should be applied.
+    // This is a list of the classes with instrumentation code that should be
+    // applied.
     private static final Class<?>[] instrumentationClasses = new Class<?>[] {
-        FileInputStreamInstrumentor.class,
-        FileOutputStreamInstrumentor.class,
-        RandomAccessFileInstrumentor.class,
-        FileChannelImplInstrumentor.class,
-        SocketInputStreamInstrumentor.class,
-        SocketOutputStreamInstrumentor.class,
-        SocketChannelImplInstrumentor.class
+            FileInputStreamInstrumentor.class,
+            FileOutputStreamInstrumentor.class,
+            RandomAccessFileInstrumentor.class,
+            FileChannelImplInstrumentor.class,
+            SocketInputStreamInstrumentor.class,
+            SocketOutputStreamInstrumentor.class,
+            SocketChannelImplInstrumentor.class
     };
 
     private static final Class<?>[] targetClasses = new Class<?>[instrumentationClasses.length];
     private static final JVM jvm = JVM.getJVM();
     private static final Runnable emitExceptionStatistics = JDKEvents::emitExceptionStatistics;
+    private static final Runnable emitFileReadIOStatistics = JDKEvents::emitFileReadIOStatistics;
+    private static final Runnable emitFileWriteIOStatistics = JDKEvents::emitFileWriteIOStatistics;
+
     private static boolean initializationTriggered;
 
     @SuppressWarnings("unchecked")
@@ -101,13 +109,15 @@ public final class JDKEvents {
         try {
             if (initializationTriggered == false) {
                 for (Class<?> mirrorEventClass : mirrorEventClasses) {
-                    SecuritySupport.registerMirror(((Class<? extends Event>)mirrorEventClass));
+                    SecuritySupport.registerMirror(((Class<? extends Event>) mirrorEventClass));
                 }
                 for (Class<?> eventClass : eventClasses) {
                     SecuritySupport.registerEvent((Class<? extends Event>) eventClass);
                 }
                 initializationTriggered = true;
                 RequestEngine.addTrustedJDKHook(ExceptionStatisticsEvent.class, emitExceptionStatistics);
+                RequestEngine.addTrustedJDKHook(FileReadIOStatisticsEvent.class, emitFileReadIOStatistics);
+                RequestEngine.addTrustedJDKHook(FileWriteIOStatisticsEvent.class, emitFileWriteIOStatistics);
             }
         } catch (Exception e) {
             Logger.log(LogTag.JFR_SYSTEM, LogLevel.WARN, "Could not initialize JDK events. " + e.getMessage());
@@ -130,7 +140,8 @@ public final class JDKEvents {
         } catch (IllegalStateException ise) {
             throw ise;
         } catch (Exception e) {
-            Logger.log(LogTag.JFR_SYSTEM, LogLevel.WARN, "Could not add instrumentation for JDK events. " + e.getMessage());
+            Logger.log(LogTag.JFR_SYSTEM, LogLevel.WARN,
+                    "Could not add instrumentation for JDK events. " + e.getMessage());
         }
     }
 
@@ -138,6 +149,39 @@ public final class JDKEvents {
         ExceptionStatisticsEvent t = new ExceptionStatisticsEvent();
         t.throwables = ThrowableTracer.numThrowables();
         t.commit();
+    }
+
+    private static void emitFileReadIOStatistics() {
+        FileReadIOStatisticsEvent t = new FileReadIOStatisticsEvent();
+        t.begin();
+        long currTime = System.currentTimeMillis();
+        long interval = (currTime - FileReadIOStatisticsEvent.oldTimeStamp) / 1000;
+        if (interval > 0) {
+            t.readRate = FileReadIOStatisticsEvent.getTotalReadBytes() / interval;
+
+        }
+        System.out.println("The Event total readbytes:" + FileReadIOStatisticsEvent.getTotalReadBytes() + " interval:"
+                + interval + " Rate is:" + t.readRate);
+        t.commit();
+        FileReadIOStatisticsEvent.oldTimeStamp = currTime;
+        t.reset();
+    }
+
+    private static void emitFileWriteIOStatistics() {
+        FileWriteIOStatisticsEvent t = new FileWriteIOStatisticsEvent();
+        t.begin();
+        long currTime = System.currentTimeMillis();
+        long interval = (currTime - FileWriteIOStatisticsEvent.oldTimeStamp) / 1000;
+        if (interval > 0) {
+            t.writeRate = FileWriteIOStatisticsEvent.getTotalWriteBytes() / interval;
+
+        }
+        System.out
+                .println("The Event total writebytes:" + FileWriteIOStatisticsEvent.getTotalWriteBytes() + " interval:"
+                        + interval + " Rate is:" + t.writeRate);
+        t.commit();
+        FileWriteIOStatisticsEvent.oldTimeStamp = currTime;
+        t.reset();
     }
 
     @SuppressWarnings("deprecation")
@@ -164,5 +208,7 @@ public final class JDKEvents {
 
     public static void remove() {
         RequestEngine.removeHook(JDKEvents::emitExceptionStatistics);
+        RequestEngine.removeHook(JDKEvents::emitFileReadIOStatistics);
+        RequestEngine.removeHook(JDKEvents::emitFileWriteIOStatistics);
     }
 }

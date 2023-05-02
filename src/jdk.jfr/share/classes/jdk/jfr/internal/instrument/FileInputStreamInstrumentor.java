@@ -28,6 +28,7 @@ package jdk.jfr.internal.instrument;
 import java.io.IOException;
 
 import jdk.jfr.events.FileReadEvent;
+import jdk.jfr.events.FileReadIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -59,6 +60,7 @@ final class FileInputStreamInstrumentor {
         } finally {
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return result;
@@ -83,6 +85,7 @@ final class FileInputStreamInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
@@ -107,6 +110,7 @@ final class FileInputStreamInstrumentor {
             }
             event.path = path;
             event.commit();
+            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
             event.reset();
         }
         return bytesRead;
