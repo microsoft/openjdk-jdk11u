@@ -45,24 +45,33 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read() throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read();
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
         int result = 0;
-        try {
-            event.begin();
+
+        if (!event.isEnabled()) {
             result = read();
-            if (result < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = 1;
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                result = read();
+                if (result < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = 1;
+                }
+            } finally {
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-        } finally {
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
+
         }
+
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(1);
+            System.out.println("byteread at 1" + result);
+        }
+
         return result;
     }
 
@@ -70,23 +79,29 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[]) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(b);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
         int bytesRead = 0;
-        try {
-            event.begin();
+        if (!event.isEnabled()) {
             bytesRead = read(b);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesRead = read(b);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
+        }
+
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
+            System.out.println("byteread at 2" + bytesRead);
         }
         return bytesRead;
     }
@@ -95,23 +110,29 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[], int off, int len) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(b, off, len);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
         int bytesRead = 0;
-        try {
-            event.begin();
+        if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } 
+        else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesRead = read(b, off, len);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
+        }
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
+            System.out.println("byteread at 3" + bytesRead);
         }
         return bytesRead;
     }

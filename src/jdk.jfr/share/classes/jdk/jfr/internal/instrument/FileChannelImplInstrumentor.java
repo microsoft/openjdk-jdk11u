@@ -68,23 +68,27 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int read(ByteBuffer dst) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(dst);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
         int bytesRead = 0;
-        try {
-            event.begin();
+        if (!event.isEnabled()) {
             bytesRead = read(dst);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesRead = read(dst);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
+        }
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(1);
         }
         return bytesRead;
     }
@@ -93,24 +97,29 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int read(ByteBuffer dst, long position) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(dst, position);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
         int bytesRead = 0;
-        try {
-            event.begin();
+        if (!event.isEnabled()) {
             bytesRead = read(dst, position);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesRead = read(dst, position);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
         }
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
+        }
+
         return bytesRead;
     }
 
@@ -118,23 +127,27 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public long read(ByteBuffer[] dsts, int offset, int length) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
+        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        long bytesRead = 0;
         if (!event.isEnabled()) {
             return read(dsts, offset, length);
-        }
-        long bytesRead = 0;
-        try {
-            event.begin();
-            bytesRead = read(dsts, offset, length);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesRead = read(dsts, offset, length);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            FileReadIOStatisticsEvent.setTotalReadBytes(event.bytesRead);
-            event.reset();
+        }
+        if (readPeriodicEvent.isEnabled()) {
+            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
         }
         return bytesRead;
     }
@@ -143,19 +156,23 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int write(ByteBuffer src) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        int bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(src);
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesWritten = write(src);
+            } finally {
+                event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-        int bytesWritten = 0;
-        try {
-            event.begin();
-            bytesWritten = write(src);
-        } finally {
-            event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
-            event.path = path;
-            event.commit();
-            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
         }
         return bytesWritten;
     }
@@ -164,20 +181,23 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int write(ByteBuffer src, long position) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        int bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(src, position);
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesWritten = write(src, position);
+            } finally {
+                event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-
-        int bytesWritten = 0;
-        try {
-            event.begin();
-            bytesWritten = write(src, position);
-        } finally {
-            event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
-            event.path = path;
-            event.commit();
-            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
         }
         return bytesWritten;
     }
@@ -186,19 +206,23 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public long write(ByteBuffer[] srcs, int offset, int length) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        long bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(srcs, offset, length);
+        } else if (event.isEnabled()) {
+            try {
+                event.begin();
+                bytesWritten = write(srcs, offset, length);
+            } finally {
+                event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-        long bytesWritten = 0;
-        try {
-            event.begin();
-            bytesWritten = write(srcs, offset, length);
-        } finally {
-            event.bytesWritten = bytesWritten > 0 ? bytesWritten : 0;
-            event.path = path;
-            event.commit();
-            FileWriteIOStatisticsEvent.setTotalWriteBytes(event.bytesWritten);
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
         }
         return bytesWritten;
     }

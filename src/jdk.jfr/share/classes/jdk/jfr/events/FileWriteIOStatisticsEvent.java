@@ -50,12 +50,15 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
         return totalWriteBytes.get();
     }
 
-    public static long setTotalWriteBytes(long bytesWritten) {
+    public static long setAddWriteBytes(long bytesWritten) {
         return totalWriteBytes.addAndGet(bytesWritten);
     }
 
-    public void reset() {
-        totalWriteBytes = new AtomicLong(0);
+    public static long getandresetWritebytes() {
+        // decrement the value with the get the gettotal
+        long result = getTotalWriteBytes();
+        totalWriteBytes.addAndGet(-result);
+        return result;
     }
 
 }

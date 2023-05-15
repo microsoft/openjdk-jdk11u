@@ -48,14 +48,19 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
 
     public static long getTotalReadBytes() {
         return totalReadBytes.get();
+
     }
 
-    public static long setTotalReadBytes(long bytesRead) {
+    public static long setAddReadBytes(long bytesRead) {
         return totalReadBytes.addAndGet(bytesRead);
     }
 
-    public void reset() {
-        totalReadBytes = new AtomicLong(0);
+    public static long getandresettb() {
+        // decrement the value with the get the gettotal
+        long result = getTotalReadBytes();
+        totalReadBytes.addAndGet(-result);
+        return result;
     }
+
 
 }

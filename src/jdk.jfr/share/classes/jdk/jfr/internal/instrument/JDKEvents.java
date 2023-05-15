@@ -155,33 +155,37 @@ public final class JDKEvents {
         FileReadIOStatisticsEvent t = new FileReadIOStatisticsEvent();
         t.begin();
         long currTime = System.currentTimeMillis();
-        long interval = (currTime - FileReadIOStatisticsEvent.oldTimeStamp) / 1000;
+        float interval = (currTime - FileReadIOStatisticsEvent.oldTimeStamp) / 1000;
+        System.out.println(" curr:"
+                + currTime + "oldtime: " + FileReadIOStatisticsEvent.oldTimeStamp + "interval:" + interval
+                + "The Event total readbytes before resetting:" + FileReadIOStatisticsEvent.getTotalReadBytes());
         if (interval > 0) {
-            t.readRate = FileReadIOStatisticsEvent.getTotalReadBytes() / interval;
+            t.readRate = (long) (FileReadIOStatisticsEvent.getandresettb() / interval);
 
         }
-        System.out.println("The Event total readbytes:" + FileReadIOStatisticsEvent.getTotalReadBytes() + " interval:"
+        System.out.println("The Event total readbytes after resetting:" + FileReadIOStatisticsEvent.getTotalReadBytes()
+                + " interval:"
                 + interval + " Rate is:" + t.readRate);
         t.commit();
         FileReadIOStatisticsEvent.oldTimeStamp = currTime;
-        t.reset();
     }
 
     private static void emitFileWriteIOStatistics() {
         FileWriteIOStatisticsEvent t = new FileWriteIOStatisticsEvent();
         t.begin();
         long currTime = System.currentTimeMillis();
-        long interval = (currTime - FileWriteIOStatisticsEvent.oldTimeStamp) / 1000;
+        // this needs to be float
+        float interval = (currTime - FileWriteIOStatisticsEvent.oldTimeStamp) / 1000;
         if (interval > 0) {
-            t.writeRate = FileWriteIOStatisticsEvent.getTotalWriteBytes() / interval;
+            t.writeRate = (long) (FileWriteIOStatisticsEvent.getandresetWritebytes() / interval);
 
         }
-        System.out
-                .println("The Event total writebytes:" + FileWriteIOStatisticsEvent.getTotalWriteBytes() + " interval:"
-                        + interval + " Rate is:" + t.writeRate);
+        // System.out
+        // .println("The Event total writebytes:" +
+        // FileWriteIOStatisticsEvent.getTotalWriteBytes() + " interval:"
+        // + interval + " Rate is:" + t.writeRate);
         t.commit();
         FileWriteIOStatisticsEvent.oldTimeStamp = currTime;
-        t.reset();
     }
 
     @SuppressWarnings("deprecation")
