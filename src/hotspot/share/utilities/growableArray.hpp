@@ -334,15 +334,23 @@ template<class E> class GrowableArray : public GenericGrowableArray {
     return -1;
   }
 
+
   void remove(const E& elem) {
+    // Assuming that element does exist.
+    bool removed = remove_if_existing(elem);
+    if (removed) return;
+    ShouldNotReachHere();
+  }
+
+  bool remove_if_existing(const E& elem) {
+    // Returns TRUE if elem is removed.
     for (int i = 0; i < _len; i++) {
       if (_data[i] == elem) {
-        for (int j = i + 1; j < _len; j++) _data[j-1] = _data[j];
-        _len--;
-        return;
+        remove_at(i);
+        return true;
       }
     }
-    ShouldNotReachHere();
+    return false;
   }
 
   // The order is preserved.
