@@ -343,6 +343,10 @@ private:
 
   Unique_Node_List ideal_nodes; // Used by CG construction and types splitting.
 
+  int              _invocation; // Current number of analysis invocation
+  int        _build_iterations; // Number of iterations took to build graph
+  double           _build_time; // Time (sec) took to build graph
+
   // Address of an element in _nodes.  Used when the element is to be modified
   PointsToNode* ptnode_adr(int idx) const {
     // There should be no new ideal nodes during ConnectionGraph build,
@@ -355,7 +359,7 @@ private:
 
   // Add nodes to ConnectionGraph.
   void add_local_var(Node* n, PointsToNode::EscapeState es);
-  void add_java_object(Node* n, PointsToNode::EscapeState es);
+  PointsToNode* add_java_object(Node* n, PointsToNode::EscapeState es);
   void add_field(Node* n, PointsToNode::EscapeState es, int offset);
   void add_arraycopy(Node* n, PointsToNode::EscapeState es, PointsToNode* src, PointsToNode* dst);
 
@@ -434,17 +438,28 @@ private:
   void set_escape_state(PointsToNode* ptn, PointsToNode::EscapeState esc) {
     // Don't change non-escaping state of NULL pointer.
     if (ptn != null_obj) {
-      if (ptn->escape_state() < esc)
+      if (ptn->escape_state() < esc) {
         ptn->set_escape_state(esc);
-      if (ptn->fields_escape_state() < esc)
+      }
+      if (ptn->fields_escape_state() < esc) {
         ptn->set_fields_escape_state(esc);
+      }
+
+      if (esc != PointsToNode::NoEscape) {
+        ptn->set_scalar_replaceable(false);
+      }
     }
   }
   void set_fields_escape_state(PointsToNode* ptn, PointsToNode::EscapeState esc) {
     // Don't change non-escaping state of NULL pointer.
     if (ptn != null_obj) {
-      if (ptn->fields_escape_state() < esc)
+      if (ptn->fields_escape_state() < esc) {
         ptn->set_fields_escape_state(esc);
+      }
+
+      if (esc != PointsToNode::NoEscape) {
+        ptn->set_scalar_replaceable(false);
+      }
     }
   }
 
@@ -454,7 +469,7 @@ private:
                                 GrowableArray<JavaObjectNode*>& non_escaped_worklist);
 
   // Adjust scalar_replaceable state after Connection Graph is built.
-  void adjust_scalar_replaceable_state(JavaObjectNode* jobj);
+  void adjust_scalar_replaceable_state(JavaObjectNode* jobj, Unique_Node_List &reducible_merges);
 
   // Propagate NSR (Not scalar replaceable) state.
   void find_scalar_replaceable_allocs(GrowableArray<JavaObjectNode*>& jobj_worklist);
@@ -466,7 +481,7 @@ private:
   Node* optimize_ptr_compare(Node* n);
 
   // Returns unique corresponding java object or NULL.
-  JavaObjectNode* unique_java_object(Node *n);
+  JavaObjectNode* unique_java_object(Node *n) const;
 
   // Add an edge of the specified type pointing to the specified target.
   bool add_edge(PointsToNode* from, PointsToNode* to) {
@@ -539,7 +554,7 @@ private:
 
   // Propagate unique types created for unescaped allocated objects
   // through the graph
-  void split_unique_types(GrowableArray<Node *>  &alloc_worklist, GrowableArray<ArrayCopyNode*> &arraycopy_worklist);
+  void split_unique_types(GrowableArray<Node *>  &alloc_worklist, GrowableArray<ArrayCopyNode*> &arraycopy_worklist, Unique_Node_List &reducible_merges);
 
   // Helper methods for unique types split.
   bool split_AddP(Node *addp, Node *base);
@@ -576,6 +591,11 @@ private:
     return (phi == NULL) ? NULL : phi->as_Phi();
   }
 
+///  // Returns true if there is an object in the scope of sfn that does not escape globally.
+///  bool has_ea_local_in_scope(SafePointNode* sfn);
+///
+///  bool has_arg_escape(CallJavaNode* call);
+
   // Notify optimizer that a node has been modified
   void record_for_optimizer(Node *n) {
     _igvn->_worklist.push(n);
@@ -585,13 +605,27 @@ private:
   // Compute the escape information
   bool compute_escape();
 
+  // -------------------------------------------
+  // Methods related to Reduce Allocation Merges
+
+  bool can_reduce_phi(PhiNode* ophi) const;
+  bool can_reduce_phi_check_users(PhiNode* ophi) const;
+  bool can_reduce_phi_check_inputs(PhiNode* ophi) const;
+
+  void reduce_phi_on_field_access(PhiNode* ophi, GrowableArray<Node *>  &alloc_worklist);
+  void reduce_phi_on_safepoints(PhiNode* ophi, Unique_Node_List* safepoints);
+  void reduce_phi(PhiNode* ophi);
+
   void set_not_scalar_replaceable(PointsToNode* ptn NOT_PRODUCT(COMMA const char* reason)) const {
     ptn->set_scalar_replaceable(false);
   }
 
 
 public:
-  ConnectionGraph(Compile *C, PhaseIterGVN *igvn);
+  ConnectionGraph(Compile *C, PhaseIterGVN *igvn, int iteration);
+
+  // Verify that SafePointScalarMerge nodes are correctly connected
+  static void verify_ram_nodes(Compile* C, Node* root);
 
   // Check for non-escaping candidates
   static bool has_candidates(Compile *C);
