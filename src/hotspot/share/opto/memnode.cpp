@@ -885,6 +885,7 @@ Node *LoadNode::make(PhaseGVN& gvn, Node *ctl, Node *mem, Node *adr, const TypeP
   case T_DOUBLE:  load = new LoadDNode (ctl, mem, adr, adr_type, rt,            mo, control_dependency); break;
   case T_ADDRESS: load = new LoadPNode (ctl, mem, adr, adr_type, rt->is_ptr(),  mo, control_dependency); break;
   case T_OBJECT:
+  case T_NARROWOOP:
 #ifdef _LP64
     if (adr->bottom_type()->is_ptr_to_narrowoop()) {
       load = new LoadNNode(ctl, mem, adr, adr_type, rt->make_narrowoop(), mo, control_dependency);
@@ -1432,15 +1433,49 @@ static bool stable_phi(PhiNode* phi, PhaseGVN *phase) {
   return true;
 }
 //------------------------------split_through_phi------------------------------
+// Check whether a call to 'split_through_phi' would split this load through the
+// Phi *base*. This method is essentially a copy of the validations performed
+// by 'split_through_phi'. The first use of this method was in EA code as part
+// of simplification of allocation merges.
+bool LoadNode::can_split_through_phi_base(PhaseGVN* phase) {
+  Node* mem        = in(Memory);
+  Node* address    = in(Address);
+  intptr_t ignore  = 0;
+  Node*    base    = AddPNode::Ideal_base_and_offset(address, phase, ignore);
+  bool base_is_phi = (base != NULL) && base->is_Phi();
+
+  if (req() > 3 || !base_is_phi) {
+    return false;
+  }
+
+  if (!mem->is_Phi()) {
+    if (!MemNode::all_controls_dominate(mem, base->in(0)))
+      return false;
+  } else if (base->in(0) != mem->in(0)) {
+    if (!MemNode::all_controls_dominate(mem, base->in(0))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//------------------------------split_through_phi------------------------------
 // Split instance or boxed field load through Phi.
-Node *LoadNode::split_through_phi(PhaseGVN *phase) {
+Node* LoadNode::split_through_phi(PhaseGVN* phase, bool ignore_missing_instance_id) {
+  if (req() > 3) {
+    assert(is_LoadVector() && Opcode() != Op_LoadVector, "load has too many inputs");
+    // LoadVector subclasses such as LoadVectorMasked have extra inputs that the logic below doesn't take into account
+    return NULL;
+  }
   Node* mem     = in(Memory);
   Node* address = in(Address);
   const TypeOopPtr *t_oop = phase->type(address)->isa_oopptr();
 
   assert((t_oop != NULL) &&
-         (t_oop->is_known_instance_field() ||
-          t_oop->is_ptr_to_boxed_value()), "invalide conditions");
+         (ignore_missing_instance_id ||
+          t_oop->is_known_instance_field() ||
+          t_oop->is_ptr_to_boxed_value()), "invalid conditions");
 
   Compile* C = phase->C;
   intptr_t ignore = 0;
@@ -1451,8 +1486,8 @@ Node *LoadNode::split_through_phi(PhaseGVN *phase) {
                            phase->type(base)->higher_equal(TypePtr::NOTNULL);
 
   if (!((mem->is_Phi() || base_is_phi) &&
-        (load_boxed_values || t_oop->is_known_instance_field()))) {
-    return NULL; // memory is not Phi
+        (ignore_missing_instance_id || load_boxed_values || t_oop->is_known_instance_field()))) {
+    return NULL; // Neither memory or base are Phi
   }
 
   if (mem->is_Phi()) {
@@ -1498,7 +1533,7 @@ Node *LoadNode::split_through_phi(PhaseGVN *phase) {
   bool load_boxed_phi = load_boxed_values && base_is_phi && (base->in(0) == mem->in(0));
 
   // Split through Phi (see original code in loopopts.cpp).
-  assert(C->have_alias_type(t_oop), "instance should have alias type");
+  assert(ignore_missing_instance_id || C->have_alias_type(t_oop), "instance should have alias type");
 
   // Do nothing here if Identity will find a value
   // (to avoid infinite chain of value phis generation).
@@ -1533,16 +1568,20 @@ Node *LoadNode::split_through_phi(PhaseGVN *phase) {
     region = mem->in(0);
   }
 
+  Node* phi = NULL;
   const Type* this_type = this->bottom_type();
-  int this_index  = C->get_alias_index(t_oop);
-  int this_offset = t_oop->offset();
-  int this_iid    = t_oop->instance_id();
-  if (!t_oop->is_known_instance() && load_boxed_values) {
-    // Use _idx of address base for boxed values.
-    this_iid = base->_idx;
-  }
   PhaseIterGVN* igvn = phase->is_IterGVN();
-  Node* phi = new PhiNode(region, this_type, NULL, mem->_idx, this_iid, this_index, this_offset);
+  if (t_oop != NULL && (t_oop->is_known_instance_field() || load_boxed_values)) {
+    int this_index = C->get_alias_index(t_oop);
+    int this_offset = t_oop->offset();
+    int this_iid = t_oop->is_known_instance_field() ? t_oop->instance_id() : base->_idx;
+    phi = new PhiNode(region, this_type, NULL, mem->_idx, this_iid, this_index, this_offset);
+  } else if (ignore_missing_instance_id) {
+    phi = new PhiNode(region, this_type, NULL, mem->_idx);
+  } else {
+    return NULL;
+  }
+
   for (uint i = 1; i < region->req(); i++) {
     Node* x;
     Node* the_clone = NULL;
