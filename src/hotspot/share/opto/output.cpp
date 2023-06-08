@@ -538,8 +538,8 @@ void Compile::FillLocArray( int idx, MachSafePointNode* sfpt, Node *local,
   // Is it a safepoint scalar object node?
   if (local->is_SafePointScalarObject()) {
     SafePointScalarObjectNode* spobj = local->as_SafePointScalarObject();
-
     ObjectValue* sv = Compile::sv_for_node_id(objs, spobj->_idx);
+
     if (sv == NULL) {
       ciKlass* cik = t->is_oopptr()->klass();
       assert(cik->is_instance_klass() ||
@@ -874,6 +874,7 @@ void Compile::Process_OopMap_Node(MachNode *mach, int current_offset) {
     // referenced in the JVMS.
     for (int i = 0; i < objs->length(); i++) {
       ScopeValue* sv = objs->at(i);
+
       if (sv->is_object_merge()) {
         ObjectMergeValue* merge = sv->as_ObjectMergeValue();
 
