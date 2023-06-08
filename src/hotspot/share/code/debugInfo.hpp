@@ -127,23 +127,24 @@ class ObjectValue: public ScopeValue {
      , _klass(NULL)
      , _field_values()
      , _value()
-     , _visited(false) {}
+     , _visited(false)
+     , _is_root(true) {}
 
   // Accessors
   bool                        is_object() const         { return true; }
   int                         id() const                { return _id; }
-  ScopeValue*                 klass() const             { return _klass; }
-  GrowableArray<ScopeValue*>* field_values()            { return &_field_values; }
-  ScopeValue*                 field_at(int i) const     { return _field_values.at(i); }
-  int                         field_size()              { return _field_values.length(); }
-  Handle                      value() const             { return _value; }
+  virtual ScopeValue*         klass() const             { return _klass; }
+  virtual GrowableArray<ScopeValue*>* field_values()    { return &_field_values; }
+  virtual ScopeValue*         field_at(int i) const     { return _field_values.at(i); }
+  virtual int                 field_size()              { return _field_values.length(); }
+  virtual Handle              value() const             { return _value; }
   bool                        is_visited() const        { return _visited; }
   bool                        is_root() const           { return _is_root; }
 
-  void                        set_id(int id)              { _id = id; }
+  void                        set_id(int id)            { _id = id; }
   void                        set_value(oop value);
-  void                        set_visited(bool visited)   { _visited = false; }
-  void                        set_root(bool root)         { _is_root = root; }
+  void                        set_visited(bool visited) { _visited = visited; }
+  void                        set_root(bool root)       { _is_root = root; }
 
   // Serialization of debugging information
   void read_object(DebugInfoReadStream* stream);

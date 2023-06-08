@@ -2719,7 +2719,6 @@ bool ConnectionGraph::is_oop_field(Node* n, int offset, bool* unsafe) {
 
 // Returns unique pointed java object or NULL.
 JavaObjectNode* ConnectionGraph::unique_java_object(Node *n) const {
-  assert(!_collecting, "should not call when contructed graph");
   // If the node was created after the escape computation we can't answer.
   uint idx = n->_idx;
   if (idx >= nodes_size()) {
