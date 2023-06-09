@@ -131,20 +131,20 @@ class ObjectValue: public ScopeValue {
      , _is_root(true) {}
 
   // Accessors
-  bool                        is_object() const         { return true; }
-  int                         id() const                { return _id; }
-  virtual ScopeValue*         klass() const             { return _klass; }
-  virtual GrowableArray<ScopeValue*>* field_values()    { return &_field_values; }
-  virtual ScopeValue*         field_at(int i) const     { return _field_values.at(i); }
-  virtual int                 field_size()              { return _field_values.length(); }
-  virtual Handle              value() const             { return _value; }
-  bool                        is_visited() const        { return _visited; }
-  bool                        is_root() const           { return _is_root; }
+  bool                        is_object() const           { return true; }
+  int                         id() const                  { return _id; }
+  virtual ScopeValue*         klass() const               { return _klass; }
+  virtual GrowableArray<ScopeValue*>* field_values()      { return &_field_values; }
+  virtual ScopeValue*         field_at(int i) const       { return _field_values.at(i); }
+  virtual int                 field_size()                { return _field_values.length(); }
+  virtual Handle              value() const               { return _value; }
+  bool                        is_visited() const          { return _visited; }
+  bool                        is_root() const             { return _is_root; }
 
-  void                        set_id(int id)            { _id = id; }
-  void                        set_value(oop value);
-  void                        set_visited(bool visited) { _visited = visited; }
-  void                        set_root(bool root)       { _is_root = root; }
+  void                        set_id(int id)              { _id = id; }
+  virtual void                set_value(oop value);
+  void                        set_visited(bool visited)   { _visited = visited; }
+  void                        set_root(bool root)         { _is_root = root; }
 
   // Serialization of debugging information
   void read_object(DebugInfoReadStream* stream);
@@ -212,10 +212,6 @@ public:
   // Serialization of debugging information
   void read_object(DebugInfoReadStream* stream);
   void write_on(DebugInfoWriteStream* stream);
-
-  // Printing
-  void print_on(outputStream* st) const ;
-  void print_detailed(outputStream* st) const;
 };
 
 class AutoBoxObjectValue : public ObjectValue {
