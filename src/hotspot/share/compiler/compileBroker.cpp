@@ -303,6 +303,14 @@ CompileTaskWrapper::~CompileTaskWrapper() {
   }
 }
 
+int CompileBroker::get_c1_thread_count() {
+  return CompilationPolicy::policy()->compiler_count(CompLevel_simple); 
+}
+
+int CompileBroker::get_c2_thread_count() {
+  return CompilationPolicy::policy()->compiler_count(CompLevel_full_optimization); 
+}
+
 /**
  * Check if a CompilerThread can be removed and update count if requested.
  */
@@ -374,6 +382,11 @@ void CompileQueue::add(CompileTask* task) {
     _last = task;
   }
   ++_size;
+  ++_total_added;
+  if (_size > _peek_size)
+  {
+    _peek_size = _size;
+  }
 
   // Mark the method as being in the compile queue.
   task->method()->set_queued_for_compilation();
@@ -523,6 +536,7 @@ void CompileQueue::remove(CompileTask* task) {
     _last = task->prev();
   }
   --_size;
+  ++_total_removed;
 }
 
 void CompileQueue::remove_and_mark_stale(CompileTask* task) {
@@ -550,6 +564,14 @@ CompileQueue* CompileBroker::compile_queue(int comp_level) {
   if (is_c2_compile(comp_level)) return _c2_compile_queue;
   if (is_c1_compile(comp_level)) return _c1_compile_queue;
   return NULL;
+}
+
+CompileQueue* CompileBroker::c1_compile_queue() {
+  return _c1_compile_queue;
+}
+
+CompileQueue* CompileBroker::c2_compile_queue() {
+  return _c2_compile_queue;
 }
 
 void CompileBroker::print_compile_queues(outputStream* st) {

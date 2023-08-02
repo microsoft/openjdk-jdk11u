@@ -664,6 +664,19 @@
     <Field type="float" contentType="hertz" name="switchRate" label="Switch Rate" description="Number of context switches per second" />
   </Event>
 
+  <Event name="CompilerQueueUtilization" category="Java Virtual Machine, Compiler" label="Compiler Queue Utilization" period="everyChunk">
+    <Field type="CompilerType" name="compiler" label="Compiler" />
+    <Field type="long" contentType="hertz" name="ingress" label="Ingress" description="Number of added requests per second"/>
+    <Field type="long" contentType="hertz" name="egress" label="Egress" description="Number of removed requests per second"/>
+    <Field type="long" contentType="count" name="size" label="Size" description="Current queue size"/>
+    <Field type="long" contentType="count" name="peek" label="Peek Size" description="Peek queue size"/>
+    <Field type="long" contentType="count" name="added" label="Added" description="Added requests"/>
+    <Field type="long" contentType="count" name="removed" label="Removed" description="Removed requests"/>
+    <Field type="long" contentType="count" name="totalAdded" label="Total Added" description="Total requests"/>
+    <Field type="long" contentType="count" name="totalRemoved" label="Total Removed" description="Total removed requests"/>
+    <Field type="int" name="compilerThreadCount" label="Number of Compiler Threads for this queue" />
+  </Event>
+
   <Event name="NetworkUtilization" category="Operating System, Network" label="Network Utilization" period="everyChunk">
     <Field type="NetworkInterfaceName" name="networkInterface" label="Network Interface" description="Network Interface Name"/>
     <Field type="long" contentType="bits-per-second" name="readRate" label="Read Rate" description="Number of incoming bits per second"/>
@@ -748,6 +761,8 @@
     <Field type="int" name="invalidatedCount" label="Invalidated Compilations" />
     <Field type="int" name="osrCompileCount" label="OSR Compilations" />
     <Field type="int" name="standardCompileCount" label="Standard Compilations" />
+    <Field type="int" name="c1ThreadCount" label="Number of C1 Threads" />
+    <Field type="int" name="c2ThreadCount" label="Number of C2 Threads" />
     <Field type="ulong" contentType="bytes" name="osrBytesCompiled" label="OSR Bytes Compiled" />
     <Field type="ulong" contentType="bytes" name="standardBytesCompiled" label="Standard Bytes Compiled" />
     <Field type="ulong" contentType="bytes" name="nmethodsSize" label="Compilation Resulting Size" />
@@ -758,6 +773,8 @@
 
   <Event name="CompilerConfiguration" category="Java Virtual Machine, Compiler" label="Compiler Configuration" thread="false" period="endChunk" startTime="false">
     <Field type="int" name="threadCount" label="Thread Count" />
+    <Field type="int" name="c1ThreadCount" label="Number of C1 Threads" />
+    <Field type="int" name="c2ThreadCount" label="Number of C2 Threads" />
     <Field type="boolean" name="tieredCompilation" label="Tiered Compilation" />
   </Event>
 
@@ -925,6 +942,11 @@
 
   <Type name="ZStatisticsCounterType" label="Z Statistics Counter">
     <Field type="string" name="counter" label="Counter" />
+  </Type>
+
+
+  <Type name="CompilerType" label="Compiler Type">
+    <Field type="string" name="compiler" label="Compiler" />
   </Type>
 
   <Type name="ZStatisticsSamplerType" label="Z Statistics Sampler">

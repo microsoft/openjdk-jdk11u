@@ -87,6 +87,9 @@ class CompileQueue : public CHeapObj<mtCompiler> {
   CompileTask* _first_stale;
 
   int _size;
+  int _total_added;
+  int _total_removed;
+  int _peek_size;
 
   void purge_stale_tasks();
  public:
@@ -95,6 +98,9 @@ class CompileQueue : public CHeapObj<mtCompiler> {
     _first = NULL;
     _last = NULL;
     _size = 0;
+    _total_added = 0;
+    _total_removed = 0;
+    _peek_size = 0;
     _first_stale = NULL;
   }
 
@@ -111,6 +117,9 @@ class CompileQueue : public CHeapObj<mtCompiler> {
   bool         is_empty() const                  { return _first == NULL; }
   int          size()     const                  { return _size;          }
 
+  int         get_peek_size()                      { return _peek_size; }
+  int         get_total_added()                    { return _total_added; }
+  int         get_total_removed()                  { return _total_removed; }
 
   // Redefine Classes support
   void mark_on_stack();
@@ -272,6 +281,10 @@ class CompileBroker: AllStatic {
   static void shutdown_compiler_runtime(AbstractCompiler* comp, CompilerThread* thread);
 
 public:
+
+  static CompileQueue* c1_compile_queue();
+  static CompileQueue* c2_compile_queue();
+
   enum {
     // The entry bci used for non-OSR compilations.
     standard_entry_bci = InvocationEntryBci
@@ -400,6 +413,8 @@ public:
 
   static CompileLog* get_log(CompilerThread* ct);
 
+  static int get_c1_thread_count();
+  static int get_c2_thread_count();
   static int get_total_compile_count() {            return _total_compile_count; }
   static int get_total_bailout_count() {            return _total_bailout_count; }
   static int get_total_invalidated_count() {        return _total_invalidated_count; }

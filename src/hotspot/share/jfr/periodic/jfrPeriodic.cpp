@@ -33,6 +33,7 @@
 #include "gc/shared/objectCountEventSender.hpp"
 #include "gc/shared/vmGCOperations.hpp"
 #include "jfr/jfrEvents.hpp"
+#include "jfr/periodic/jfrCompilerQueueUtilization.hpp"
 #include "jfr/periodic/jfrModuleEvent.hpp"
 #include "jfr/periodic/jfrOSInterface.hpp"
 #include "jfr/periodic/jfrThreadCPULoadEvent.hpp"
@@ -191,6 +192,10 @@ TRACE_REQUEST_FUNC(ThreadCPULoad) {
 
 TRACE_REQUEST_FUNC(NetworkUtilization) {
   JfrNetworkUtilization::send_events();
+}
+
+TRACE_REQUEST_FUNC(CompilerQueueUtilization) {
+  JfrCompilerQueueUtilization::send_events();
 }
 
 TRACE_REQUEST_FUNC(CPUTimeStampCounter) {
@@ -508,6 +513,8 @@ TRACE_REQUEST_FUNC(ClassLoaderStatistics) {
 
 TRACE_REQUEST_FUNC(CompilerStatistics) {
   EventCompilerStatistics event;
+  event.set_c1ThreadCount(CompileBroker::get_c1_thread_count());
+  event.set_c2ThreadCount(CompileBroker::get_c2_thread_count());
   event.set_compileCount(CompileBroker::get_total_compile_count());
   event.set_bailoutCount(CompileBroker::get_total_bailout_count());
   event.set_invalidatedCount(CompileBroker::get_total_invalidated_count());
@@ -525,6 +532,8 @@ TRACE_REQUEST_FUNC(CompilerStatistics) {
 TRACE_REQUEST_FUNC(CompilerConfiguration) {
   EventCompilerConfiguration event;
   event.set_threadCount(CICompilerCount);
+  event.set_c1ThreadCount(CompileBroker::get_c1_thread_count());
+  event.set_c2ThreadCount(CompileBroker::get_c2_thread_count());
   event.set_tieredCompilation(TieredCompilation);
   event.commit();
 }
