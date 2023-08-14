@@ -40,27 +40,62 @@ import java.util.concurrent.atomic.AtomicLong;
 @StackTrace(false)
 public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
 
-    public static long oldTimeStamp;
-    private static AtomicLong totalReadBytes = new AtomicLong(0);
+    public static final ThreadLocal<FileReadIOStatisticsEvent> EVENT = new ThreadLocal<>() {
+        @Override
+        protected FileReadIOStatisticsEvent initialValue() {
+            return new FileReadIOStatisticsEvent();
+        }
+    };
+
+    // private variables
+    private static AtomicLong totalReadBytesForPeriod = new AtomicLong(0);
+    private static AtomicLong totalDuration = new AtomicLong(0);
+    private static AtomicLong totalReadBytesForProcess = new AtomicLong(0);
+    
 
     @Label("Read Rate (Bytes/Sec)")
     public long readRate;
 
-    public static long getTotalReadBytes() {
-        return totalReadBytes.get();
+    @Label("Total Accumulated Read Bytes")
+    public long accRead; // total accumulated
+
+    /* Getters and setters */
+    public static long getTotalReadBytesForProcess() {
+        return totalReadBytesForProcess.get();
+    }
+
+    public static void setTotalReadBytesForProcess(long bytesRead) {
+        totalReadBytesForProcess.addAndGet(bytesRead);
+    }
+
+    public static long getTotalDuration() {
+        return totalDuration.get();
+    }
+
+    public static long getTotalReadBytesForPeriod() {
+        return totalReadBytesForPeriod.get();
 
     }
 
-    public static long setAddReadBytes(long bytesRead) {
-        return totalReadBytes.addAndGet(bytesRead);
+    // duration:ms
+    public static void setAddReadBytesForPeriod(long bytesRead, long duration) {
+        totalDuration.addAndGet(duration);
+        totalReadBytesForPeriod.addAndGet(bytesRead);
     }
 
-    public static long getandresettb() {
+    // returning rate
+    public static long getAndResetReadValues() {
         // decrement the value with the get the gettotal
-        long result = getTotalReadBytes();
-        totalReadBytes.addAndGet(-result);
-        return result;
+        long result = getTotalReadBytesForPeriod();
+        long interval = getTotalDuration();
+        totalReadBytesForPeriod.addAndGet(-result);
+
+        if (interval > 0) {
+            totalDuration.addAndGet(-interval);
+            float intervalInSec = (float) (interval * 1.0 / 1000);
+            long rRate = (long) (result / intervalInSec);
+            return rRate;
+        }
+        return 0;
     }
-
-
 }

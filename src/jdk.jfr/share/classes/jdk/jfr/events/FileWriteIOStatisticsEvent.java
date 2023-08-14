@@ -40,25 +40,66 @@ import java.util.concurrent.atomic.AtomicLong;
 @StackTrace(false)
 public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
 
+    public static final ThreadLocal<FileWriteIOStatisticsEvent> EVENT = new ThreadLocal<>() {
+        @Override
+        protected FileWriteIOStatisticsEvent initialValue() {
+            return new FileWriteIOStatisticsEvent();
+        }
+    };
+
+    public static long oldTimeStamp;
+    public static AtomicLong totalWriteBytesForProcess = new AtomicLong(0);
+    private static AtomicLong totalWriteBytesForPeriod = new AtomicLong(0);
+    private static AtomicLong totalDuration = new AtomicLong(0);
+
     @Label("Write Rate (Bytes/Sec)")
     public long writeRate;
 
-    public static long oldTimeStamp;
-    private static AtomicLong totalWriteBytes = new AtomicLong(0);
+    @Label("Total Accumulated Write Bytes")
+    public long accWrite;
 
-    public static long getTotalWriteBytes() {
-        return totalWriteBytes.get();
+    // getters and setters
+    public static long getTotalWriteBytesForProcess() {
+        return totalWriteBytesForProcess.get();
     }
 
-    public static long setAddWriteBytes(long bytesWritten) {
-        return totalWriteBytes.addAndGet(bytesWritten);
+    public static void setTotalWriteBytesForProcess(long bytesWritten) {
+        totalWriteBytesForProcess.addAndGet(bytesWritten);
+
     }
 
-    public static long getandresetWritebytes() {
+    public static long getTotalDuration() {
+        return totalDuration.get();
+    }
+
+    public static long getTotalWriteBytesForPeriod() {
+        return totalWriteBytesForPeriod.get();
+    }
+
+    public static long setAddWriteBytesForPeriod(long bytesWritten, long duration) {
+        totalDuration.addAndGet(duration);
+        return totalWriteBytesForPeriod.addAndGet(bytesWritten);
+    }
+
+    public static long getandresetWriteValues() {
         // decrement the value with the get the gettotal
-        long result = getTotalWriteBytes();
-        totalWriteBytes.addAndGet(-result);
-        return result;
-    }
+        long result = getTotalWriteBytesForPeriod();
+        long interval = getTotalDuration();
+        totalWriteBytesForPeriod.addAndGet(-result);
+        System.out.print("****");
+        System.out.println("The interval is"+interval);
+        System.out.println("The result is"+result);
+      
 
+        if (interval > 0) {
+            totalDuration.addAndGet(-interval);
+            float intervalInSec = (float) (interval * 1.0 / 1000);
+            long wRate = (long) (result / intervalInSec);
+            System.out.println("The intervalin sec is"+intervalInSec);
+            System.out.println("The wrate is"+wRate);
+            System.out.print("****");
+            return wRate;
+        }
+        return 0;
+    }
 }

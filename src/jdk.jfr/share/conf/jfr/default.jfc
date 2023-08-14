@@ -582,13 +582,23 @@
     <event name="jdk.FileRead">
       <setting name="enabled">true</setting>
       <setting name="stackTrace">true</setting>
-      <setting name="threshold" control="file-io-threshold">20 ms</setting>
+      <setting name="threshold" control="file-io-threshold">0 ms</setting>
+    </event>
+
+       <event name="jdk.FileReadIOStatistics">
+      <setting name="enabled">true</setting>
+       <setting name="period">1 s</setting>
     </event>
 
     <event name="jdk.FileWrite">
       <setting name="enabled">true</setting>
       <setting name="stackTrace">true</setting>
-      <setting name="threshold" control="file-io-threshold">20 ms</setting>
+      <setting name="threshold" control="file-io-threshold">0 ms</setting>
+    </event>
+
+    <event name="jdk.FileWriteIOStatistics">
+      <setting name="enabled">true</setting>
+       <setting name="period">5 s</setting>
     </event>
 
     <event name="jdk.SocketRead">

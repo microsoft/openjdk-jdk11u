@@ -106,6 +106,7 @@ public final class JDKEvents {
 
     @SuppressWarnings("unchecked")
     public synchronized static void initialize() {
+        Logger.log(LogTag.JFR_SYSTEM, LogLevel.INFO, "KT: initialize");
         try {
             if (initializationTriggered == false) {
                 for (Class<?> mirrorEventClass : mirrorEventClasses) {
@@ -126,6 +127,7 @@ public final class JDKEvents {
 
     public static void addInstrumentation() {
         try {
+            Logger.log(LogTag.JFR_SYSTEM, LogLevel.INFO, "KT: addInstrumentation");
             List<Class<?>> list = new ArrayList<>();
             for (int i = 0; i < instrumentationClasses.length; i++) {
                 JIInstrumentationTarget tgt = instrumentationClasses[i].getAnnotation(JIInstrumentationTarget.class);
@@ -152,41 +154,24 @@ public final class JDKEvents {
     }
 
     private static void emitFileReadIOStatistics() {
-        FileReadIOStatisticsEvent t = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent t = FileReadIOStatisticsEvent.EVENT.get();
         t.begin();
-        long currTime = System.currentTimeMillis();
-        float interval = (currTime - FileReadIOStatisticsEvent.oldTimeStamp) / 1000;
-        System.out.println(" curr:"
-                + currTime + "oldtime: " + FileReadIOStatisticsEvent.oldTimeStamp + "interval:" + interval
-                + "The Event total readbytes before resetting:" + FileReadIOStatisticsEvent.getTotalReadBytes());
-        if (interval > 0) {
-            t.readRate = (long) (FileReadIOStatisticsEvent.getandresettb() / interval);
-
-        }
-        System.out.println("The Event total readbytes after resetting:" + FileReadIOStatisticsEvent.getTotalReadBytes()
-                + " interval:"
-                + interval + " Rate is:" + t.readRate);
+        t.accRead = FileReadIOStatisticsEvent.getTotalReadBytesForProcess();
+        t.readRate = FileReadIOStatisticsEvent.getAndResetReadValues();
         t.commit();
-        FileReadIOStatisticsEvent.oldTimeStamp = currTime;
     }
 
     private static void emitFileWriteIOStatistics() {
         FileWriteIOStatisticsEvent t = new FileWriteIOStatisticsEvent();
         t.begin();
-        long currTime = System.currentTimeMillis();
-        // this needs to be float
-        float interval = (currTime - FileWriteIOStatisticsEvent.oldTimeStamp) / 1000;
-        if (interval > 0) {
-            t.writeRate = (long) (FileWriteIOStatisticsEvent.getandresetWritebytes() / interval);
-
-        }
-        // System.out
-        // .println("The Event total writebytes:" +
-        // FileWriteIOStatisticsEvent.getTotalWriteBytes() + " interval:"
-        // + interval + " Rate is:" + t.writeRate);
+        t.accWrite = FileWriteIOStatisticsEvent.getTotalWriteBytesForProcess();
+        t.writeRate = FileWriteIOStatisticsEvent.getandresetWriteValues();
         t.commit();
-        FileWriteIOStatisticsEvent.oldTimeStamp = currTime;
-    }
+    }    
+
+     
+
+
 
     @SuppressWarnings("deprecation")
     public static byte[] retransformCallback(Class<?> klass, byte[] oldBytes) throws Throwable {

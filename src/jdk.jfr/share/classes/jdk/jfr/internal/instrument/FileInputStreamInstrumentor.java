@@ -45,11 +45,14 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read() throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int result = 0;
 
+        // start time
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             result = read();
+
         } else if (event.isEnabled()) {
             try {
                 event.begin();
@@ -68,8 +71,9 @@ final class FileInputStreamInstrumentor {
         }
 
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(1);
-            System.out.println("byteread at 1" + result);
+            long duration = System.currentTimeMillis() - startTime;
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(result);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(result, duration);
         }
 
         return result;
@@ -79,8 +83,9 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[]) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             bytesRead = read(b);
         } else if (event.isEnabled()) {
@@ -99,9 +104,12 @@ final class FileInputStreamInstrumentor {
             }
         }
 
+        // may be we dont need this check, but we will await feedback from the team
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
-            System.out.println("byteread at 2" + bytesRead);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, duration);
+
         }
         return bytesRead;
     }
@@ -110,15 +118,17 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[], int off, int len) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+        long startTime = System.currentTimeMillis();
+
         if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
-        } 
-        else if (event.isEnabled()) {
+        } else if (event.isEnabled()) {
             try {
                 event.begin();
                 bytesRead = read(b, off, len);
+
             } finally {
                 if (bytesRead < 0) {
                     event.endOfFile = true;
@@ -131,8 +141,9 @@ final class FileInputStreamInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
-            System.out.println("byteread at 3" + bytesRead);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(b.length);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }

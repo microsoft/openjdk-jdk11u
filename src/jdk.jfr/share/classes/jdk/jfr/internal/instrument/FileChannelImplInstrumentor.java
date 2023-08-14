@@ -68,7 +68,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int read(ByteBuffer dst) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
         if (!event.isEnabled()) {
             bytesRead = read(dst);
@@ -88,7 +88,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(1);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(1, 0);
         }
         return bytesRead;
     }
@@ -97,7 +97,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int read(ByteBuffer dst, long position) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
         if (!event.isEnabled()) {
             bytesRead = read(dst, position);
@@ -117,7 +117,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, 0);
         }
 
         return bytesRead;
@@ -127,7 +127,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public long read(ByteBuffer[] dsts, int offset, int length) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        FileReadIOStatisticsEvent readPeriodicEvent = new FileReadIOStatisticsEvent();
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         long bytesRead = 0;
         if (!event.isEnabled()) {
             return read(dsts, offset, length);
@@ -147,7 +147,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytes(bytesRead);
+            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, 0);
         }
         return bytesRead;
     }
@@ -156,7 +156,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int write(ByteBuffer src) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         int bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(src);
@@ -172,7 +172,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten, 0);
         }
         return bytesWritten;
     }
@@ -181,7 +181,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public int write(ByteBuffer src, long position) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         int bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(src, position);
@@ -197,7 +197,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten, 0);
         }
         return bytesWritten;
     }
@@ -206,7 +206,7 @@ final class FileChannelImplInstrumentor {
     @JIInstrumentationMethod
     public long write(ByteBuffer[] srcs, int offset, int length) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         long bytesWritten = 0;
         if (!event.isEnabled()) {
             return write(srcs, offset, length);
@@ -222,7 +222,7 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytes(bytesWritten);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten,0);
         }
         return bytesWritten;
     }

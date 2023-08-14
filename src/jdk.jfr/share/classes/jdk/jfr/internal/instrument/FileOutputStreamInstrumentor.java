@@ -45,8 +45,9 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(int b) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
 
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -61,8 +62,9 @@ final class FileOutputStreamInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            System.out.println("bytewrite at 1");
-            FileWriteIOStatisticsEvent.setAddWriteBytes(1);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(1);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(1, duration);
 
         }
     }
@@ -71,7 +73,8 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(byte b[]) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -87,8 +90,9 @@ final class FileOutputStreamInstrumentor {
         }
 
         if (writePeriodicEvent.isEnabled()) {
-            System.out.println("bytewrite at 2" + b.length);
-            FileWriteIOStatisticsEvent.setAddWriteBytes(b.length);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(b.length, duration);
 
         }
     }
@@ -97,7 +101,8 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(byte b[], int off, int len) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
-        FileWriteIOStatisticsEvent writePeriodicEvent = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b, off, len);
         } else if (event.isEnabled()) {
@@ -113,9 +118,9 @@ final class FileOutputStreamInstrumentor {
         }
 
         if (writePeriodicEvent.isEnabled()) {
-            // System.out.println("bytewrite at 3" + len);
-            FileWriteIOStatisticsEvent.setAddWriteBytes(len);
-
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
+            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(len, duration);
         }
     }
 }
