@@ -46,7 +46,7 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
             return new FileWriteIOStatisticsEvent();
         }
     };
-    
+
     private static AtomicLong totalWriteBytesForProcess = new AtomicLong(0);
     private static AtomicLong totalWriteBytesForPeriod = new AtomicLong(0);
     private static AtomicLong totalDuration = new AtomicLong(0);
@@ -54,7 +54,7 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
     @Label("Write Rate (Bytes/Sec)")
     public long writeRate;
 
-    @Label("Total Accumulated Write Bytes")
+    @Label("Total Accumulated Write Bytes Process")
     public long accWrite;
 
     // getters and setters
@@ -75,28 +75,20 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
         return totalWriteBytesForPeriod.get();
     }
 
-    public static long setAddWriteBytesForPeriod(long bytesWritten, long duration) {
+    public static long setTotalWriteBytesForPeriod(long bytesWritten, long duration) {
         totalDuration.addAndGet(duration);
         return totalWriteBytesForPeriod.addAndGet(bytesWritten);
     }
 
-    public static long getandresetWriteValues() {
+    public static long getWriteRateForPeriod() {
         // decrement the value with the get the gettotal
         long result = getTotalWriteBytesForPeriod();
         long interval = getTotalDuration();
         totalWriteBytesForPeriod.addAndGet(-result);
-        System.out.print("****");
-        System.out.println("The interval is"+interval);
-        System.out.println("The result is"+result);
-      
-
         if (interval > 0) {
             totalDuration.addAndGet(-interval);
             float intervalInSec = (float) (interval * 1.0 / 1000);
             long wRate = (long) (result / intervalInSec);
-            System.out.println("The intervalin sec is"+intervalInSec);
-            System.out.println("The wrate is"+wRate);
-            System.out.print("****");
             return wRate;
         }
         return 0;

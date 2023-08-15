@@ -70,6 +70,8 @@ final class FileChannelImplInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             bytesRead = read(dst);
         } else if (event.isEnabled()) {
@@ -88,7 +90,9 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(1, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }
@@ -99,6 +103,8 @@ final class FileChannelImplInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             bytesRead = read(dst, position);
         } else if (event.isEnabled()) {
@@ -117,9 +123,10 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
-
         return bytesRead;
     }
 
@@ -129,6 +136,8 @@ final class FileChannelImplInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         long bytesRead = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return read(dsts, offset, length);
         } else if (event.isEnabled()) {
@@ -147,7 +156,9 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }
@@ -158,6 +169,8 @@ final class FileChannelImplInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         int bytesWritten = 0;
+        
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return write(src);
         } else if (event.isEnabled()) {
@@ -172,7 +185,9 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten, 0);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;
     }
@@ -183,6 +198,8 @@ final class FileChannelImplInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         int bytesWritten = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return write(src, position);
         } else if (event.isEnabled()) {
@@ -197,7 +214,9 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten, 0);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;
     }
@@ -208,6 +227,8 @@ final class FileChannelImplInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         long bytesWritten = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return write(srcs, offset, length);
         } else if (event.isEnabled()) {
@@ -222,7 +243,9 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(bytesWritten,0);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;
     }

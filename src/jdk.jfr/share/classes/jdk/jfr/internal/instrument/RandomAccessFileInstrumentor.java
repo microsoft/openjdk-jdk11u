@@ -49,6 +49,8 @@ final class RandomAccessFileInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int result = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return read();
         } else if (event.isEnabled()) {
@@ -62,15 +64,15 @@ final class RandomAccessFileInstrumentor {
                 }
             } finally {
                 event.path = path;
-                event.commit();
-                // FileReadIOStatisticsEvent.set(event.bytesRead);
+                event.commit();               
                 event.reset();
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(1, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(result);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(result, duration);
         }
-
         return result;
     }
 
@@ -80,6 +82,8 @@ final class RandomAccessFileInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             return read(b);
         } else if (event.isEnabled()) {
@@ -98,7 +102,9 @@ final class RandomAccessFileInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }
@@ -109,6 +115,8 @@ final class RandomAccessFileInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
         } else if (event.isEnabled()) {
@@ -128,7 +136,9 @@ final class RandomAccessFileInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(1, 0);
+            long duration = System.currentTimeMillis() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }
@@ -138,6 +148,8 @@ final class RandomAccessFileInstrumentor {
     public void write(int b) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+        
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -152,7 +164,9 @@ final class RandomAccessFileInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(1, 0);
+            long duration = System.currentTimeMillis() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b, duration);
         }
     }
 
@@ -161,6 +175,8 @@ final class RandomAccessFileInstrumentor {
     public void write(byte b[]) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -176,7 +192,9 @@ final class RandomAccessFileInstrumentor {
         }
 
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(b.length, 0);
+            long duration = System.currentTimeMillis() - startTime;            
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
     }
 
@@ -185,6 +203,8 @@ final class RandomAccessFileInstrumentor {
     public void write(byte b[], int off, int len) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
+        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b, off, len);
         } else if (event.isEnabled()) {
@@ -198,12 +218,11 @@ final class RandomAccessFileInstrumentor {
                 event.reset();
             }
 
-        }
-
+        }        
         if (writePeriodicEvent.isEnabled()) {
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(len, 0);
+            long duration = System.currentTimeMillis() - startTime;            
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
-
     }
-
 }

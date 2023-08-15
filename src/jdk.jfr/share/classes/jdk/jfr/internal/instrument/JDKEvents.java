@@ -157,7 +157,7 @@ public final class JDKEvents {
         FileReadIOStatisticsEvent t = FileReadIOStatisticsEvent.EVENT.get();
         t.begin();
         t.accRead = FileReadIOStatisticsEvent.getTotalReadBytesForProcess();
-        t.readRate = FileReadIOStatisticsEvent.getAndResetReadValues();
+        t.readRate = FileReadIOStatisticsEvent.getReadRateForPeriod();
         t.commit();
     }
 
@@ -165,9 +165,9 @@ public final class JDKEvents {
         FileWriteIOStatisticsEvent t = FileWriteIOStatisticsEvent.EVENT.get();
         t.begin();
         t.accWrite = FileWriteIOStatisticsEvent.getTotalWriteBytesForProcess();
-        t.writeRate = FileWriteIOStatisticsEvent.getandresetWriteValues();
+        t.writeRate = FileWriteIOStatisticsEvent.getWriteRateForPeriod();
         t.commit();
-    }    
+    }
 
     @SuppressWarnings("deprecation")
     public static byte[] retransformCallback(Class<?> klass, byte[] oldBytes) throws Throwable {

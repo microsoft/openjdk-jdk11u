@@ -78,18 +78,17 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
     }
 
     // duration:ms
-    public static void setAddReadBytesForPeriod(long bytesRead, long duration) {
+    public static void setTotalReadBytesForPeriod(long bytesRead, long duration) {
         totalDuration.addAndGet(duration);
         totalReadBytesForPeriod.addAndGet(bytesRead);
     }
 
     // returning rate
-    public static long getAndResetReadValues() {
+    public static long getReadRateForPeriod() {
         // decrement the value with the get the gettotal
         long result = getTotalReadBytesForPeriod();
         long interval = getTotalDuration();
         totalReadBytesForPeriod.addAndGet(-result);
-
         if (interval > 0) {
             totalDuration.addAndGet(-interval);
             float intervalInSec = (float) (interval * 1.0 / 1000);

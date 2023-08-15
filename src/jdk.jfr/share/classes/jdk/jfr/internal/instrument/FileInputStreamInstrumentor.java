@@ -48,11 +48,9 @@ final class FileInputStreamInstrumentor {
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int result = 0;
 
-        // start time
         long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             result = read();
-
         } else if (event.isEnabled()) {
             try {
                 event.begin();
@@ -69,13 +67,11 @@ final class FileInputStreamInstrumentor {
             }
 
         }
-
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;
             FileReadIOStatisticsEvent.setTotalReadBytesForProcess(result);
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(result, duration);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(result, duration);
         }
-
         return result;
     }
 
@@ -85,6 +81,7 @@ final class FileInputStreamInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+
         long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             bytesRead = read(b);
@@ -108,8 +105,7 @@ final class FileInputStreamInstrumentor {
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;           
             FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, duration);
-
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }
@@ -120,8 +116,8 @@ final class FileInputStreamInstrumentor {
         FileReadEvent event = FileReadEvent.EVENT.get();
         FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
+        
         long startTime = System.currentTimeMillis();
-
         if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
         } else if (event.isEnabled()) {
@@ -142,8 +138,8 @@ final class FileInputStreamInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(b.length);
-            FileReadIOStatisticsEvent.setAddReadBytesForPeriod(bytesRead, duration);
+            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
     }

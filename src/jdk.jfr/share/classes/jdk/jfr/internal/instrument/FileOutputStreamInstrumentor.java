@@ -63,9 +63,8 @@ final class FileOutputStreamInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(1);
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(1, duration);
-
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b, duration);
         }
     }
 
@@ -74,6 +73,7 @@ final class FileOutputStreamInstrumentor {
     public void write(byte b[]) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
         long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b);
@@ -88,12 +88,10 @@ final class FileOutputStreamInstrumentor {
                 event.reset();
             }
         }
-
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;
             FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(b.length, duration);
-
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
     }
 
@@ -102,6 +100,7 @@ final class FileOutputStreamInstrumentor {
     public void write(byte b[], int off, int len) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
         long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b, off, len);
@@ -116,11 +115,10 @@ final class FileOutputStreamInstrumentor {
                 event.reset();
             }
         }
-
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.currentTimeMillis() - startTime;
             FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
-            FileWriteIOStatisticsEvent.setAddWriteBytesForPeriod(len, duration);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
     }
 }
