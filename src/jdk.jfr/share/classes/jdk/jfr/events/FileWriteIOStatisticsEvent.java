@@ -46,9 +46,8 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
             return new FileWriteIOStatisticsEvent();
         }
     };
-
-    public static long oldTimeStamp;
-    public static AtomicLong totalWriteBytesForProcess = new AtomicLong(0);
+    
+    private static AtomicLong totalWriteBytesForProcess = new AtomicLong(0);
     private static AtomicLong totalWriteBytesForPeriod = new AtomicLong(0);
     private static AtomicLong totalDuration = new AtomicLong(0);
 

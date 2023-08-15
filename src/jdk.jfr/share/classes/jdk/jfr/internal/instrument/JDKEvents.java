@@ -162,16 +162,12 @@ public final class JDKEvents {
     }
 
     private static void emitFileWriteIOStatistics() {
-        FileWriteIOStatisticsEvent t = new FileWriteIOStatisticsEvent();
+        FileWriteIOStatisticsEvent t = FileWriteIOStatisticsEvent.EVENT.get();
         t.begin();
         t.accWrite = FileWriteIOStatisticsEvent.getTotalWriteBytesForProcess();
         t.writeRate = FileWriteIOStatisticsEvent.getandresetWriteValues();
         t.commit();
     }    
-
-     
-
-
 
     @SuppressWarnings("deprecation")
     public static byte[] retransformCallback(Class<?> klass, byte[] oldBytes) throws Throwable {
