@@ -51,7 +51,7 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
     private static AtomicLong totalWriteBytesForPeriod = new AtomicLong(0);
     private static AtomicLong totalDuration = new AtomicLong(0);
 
-    @Label("Write Rate (Bytes/Sec)")
+    @Label("Write Rate (Bytes per Sec)")
     public long writeRate;
 
     @Label("Total Accumulated Write Bytes Process")
@@ -84,11 +84,11 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
         // decrement the value with the get the gettotal
         long result = getTotalWriteBytesForPeriod();
         long interval = getTotalDuration();
-        totalWriteBytesForPeriod.addAndGet(-result);
+        totalWriteBytesForPeriod.addAndGet(-result);       
         if (interval > 0) {
             totalDuration.addAndGet(-interval);
-            float intervalInSec = (float) (interval * 1.0 / 1000);
-            long wRate = (long) (result / intervalInSec);
+            double intervalInSec = (interval * 1.0 / 1000000000);           
+            long wRate = (long) (result / intervalInSec);                  
             return wRate;
         }
         return 0;

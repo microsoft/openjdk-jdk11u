@@ -53,7 +53,7 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
     private static AtomicLong totalReadBytesForProcess = new AtomicLong(0);
     
 
-    @Label("Read Rate (Bytes/Sec)")
+    @Label("Read Rate (Bytes per Sec)")
     public long readRate;
 
     @Label("Total Accumulated Read Bytes")
@@ -91,8 +91,12 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
         totalReadBytesForPeriod.addAndGet(-result);
         if (interval > 0) {
             totalDuration.addAndGet(-interval);
-            float intervalInSec = (float) (interval * 1.0 / 1000);
+            double intervalInSec = (interval * 1.0 / 1000000000);
             long rRate = (long) (result / intervalInSec);
+            System.out.println("Read Rate is"+rRate);
+            // System.out.println("Rate is timeunit"+wRateTU);
+            System.out.println("Interval in sec is mycal"+intervalInSec);
+            // System.out.println("Interval in sec is timeunit"+intervalInSecTU);
             return rRate;
         }
         return 0;

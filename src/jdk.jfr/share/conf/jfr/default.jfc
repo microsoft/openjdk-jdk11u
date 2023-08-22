@@ -585,9 +585,9 @@
       <setting name="threshold" control="file-io-threshold">0 ms</setting>
     </event>
 
-       <event name="jdk.FileReadIOStatistics">
-      <setting name="enabled">true</setting>
-       <setting name="period">1 s</setting>
+    <event name="jdk.FileReadIOStatistics">
+      <setting name="enabled">false</setting>
+      <setting name="period">5 s</setting>
     </event>
 
     <event name="jdk.FileWrite">
@@ -597,8 +597,8 @@
     </event>
 
     <event name="jdk.FileWriteIOStatistics">
-      <setting name="enabled">true</setting>
-       <setting name="period">5 s</setting>
+      <setting name="enabled">false</setting>
+      <setting name="period">5 s</setting>
     </event>
 
     <event name="jdk.SocketRead">

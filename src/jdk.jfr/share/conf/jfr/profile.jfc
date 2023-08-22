@@ -579,6 +579,16 @@
       <setting name="threshold" control="file-io-threshold">10 ms</setting>
     </event>
 
+    <event name="jdk.FileReadIOStatistics">
+      <setting name="enabled">false</setting>
+       <setting name="period">5 s</setting>
+    </event>
+
+     <event name="jdk.FileWriteIOStatistics">
+      <setting name="enabled">false</setting>
+       <setting name="period">5 s</setting>
+    </event>
+
     <event name="jdk.FileRead">
       <setting name="enabled">true</setting>
       <setting name="stackTrace">true</setting>

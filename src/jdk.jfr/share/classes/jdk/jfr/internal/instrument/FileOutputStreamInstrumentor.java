@@ -47,7 +47,7 @@ final class FileOutputStreamInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -62,9 +62,9 @@ final class FileOutputStreamInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            long duration = System.currentTimeMillis() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b);
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b, duration);
+            long duration = System.nanoTime() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(1);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(1, duration);
         }
     }
 
@@ -74,7 +74,7 @@ final class FileOutputStreamInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
         } else if (event.isEnabled()) {
@@ -89,7 +89,7 @@ final class FileOutputStreamInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            long duration = System.currentTimeMillis() - startTime;
+            long duration = System.nanoTime() - startTime;
             FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
@@ -100,8 +100,9 @@ final class FileOutputStreamInstrumentor {
     public void write(byte b[], int off, int len) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+       
+        long startTime = System.nanoTime();
 
-        long startTime = System.currentTimeMillis();
         if (!event.isEnabled()) {
             write(b, off, len);
         } else if (event.isEnabled()) {
@@ -116,7 +117,7 @@ final class FileOutputStreamInstrumentor {
             }
         }
         if (writePeriodicEvent.isEnabled()) {
-            long duration = System.currentTimeMillis() - startTime;
+            long duration = System.nanoTime() - startTime;
             FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
