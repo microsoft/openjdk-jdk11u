@@ -57,15 +57,10 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
     @Label("Total Accumulated Write Bytes Process")
     public long accWrite;
 
-    // getters and setters
+    /** Getters */
     public static long getTotalWriteBytesForProcess() {
         return totalWriteBytesForProcess.get();
-    }
-
-    public static void setTotalWriteBytesForProcess(long bytesWritten) {
-        totalWriteBytesForProcess.addAndGet(bytesWritten);
-
-    }
+    } 
 
     public static long getTotalDuration() {
         return totalDuration.get();
@@ -77,6 +72,7 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
 
     public static long setTotalWriteBytesForPeriod(long bytesWritten, long duration) {
         totalDuration.addAndGet(duration);
+        totalWriteBytesForProcess.addAndGet(bytesWritten);
         return totalWriteBytesForPeriod.addAndGet(bytesWritten);
     }
 

@@ -70,7 +70,6 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;          
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(1);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(1, duration);
         }
         return result;
@@ -103,7 +102,6 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -136,7 +134,6 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -164,7 +161,6 @@ final class RandomAccessFileInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(1);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(1, duration);
         }
     }
@@ -192,7 +188,6 @@ final class RandomAccessFileInstrumentor {
 
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;            
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
     }
@@ -220,7 +215,6 @@ final class RandomAccessFileInstrumentor {
         }        
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;            
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
     }

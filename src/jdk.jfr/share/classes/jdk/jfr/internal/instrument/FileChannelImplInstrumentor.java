@@ -91,7 +91,6 @@ final class FileChannelImplInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -124,7 +123,6 @@ final class FileChannelImplInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -157,7 +155,6 @@ final class FileChannelImplInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -186,7 +183,6 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;
@@ -215,7 +211,6 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;
@@ -244,7 +239,6 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(bytesWritten);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
         }
         return bytesWritten;

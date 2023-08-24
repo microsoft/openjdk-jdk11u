@@ -63,7 +63,6 @@ final class FileOutputStreamInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(1);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(1, duration);
         }
     }
@@ -90,7 +89,6 @@ final class FileOutputStreamInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(b.length);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
     }
@@ -118,7 +116,6 @@ final class FileOutputStreamInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForProcess(len);
             FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
     }

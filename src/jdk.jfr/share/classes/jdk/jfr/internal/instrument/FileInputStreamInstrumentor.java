@@ -69,7 +69,6 @@ final class FileInputStreamInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(1);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(1, duration);
         }
         return result;
@@ -104,7 +103,6 @@ final class FileInputStreamInstrumentor {
         // may be we dont need this check, but we will await feedback from the team
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
@@ -138,7 +136,6 @@ final class FileInputStreamInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;                       
-            FileReadIOStatisticsEvent.setTotalReadBytesForProcess(bytesRead);
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
         }
         return bytesRead;
