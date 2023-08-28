@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import jdk.test.lib.jfr.EventNames;
 
 import jdk.jfr.Recording;
 import jdk.jfr.consumer.RecordedEvent;
@@ -54,7 +55,9 @@ public class TestFileStreamEvents {
             List<IOEvent> expectedEvents = new ArrayList<>();
             try(FileOutputStream fos = new FileOutputStream(tmp); FileInputStream fis = new FileInputStream(tmp);) {
                 recording.enable(IOEvent.EVENT_FILE_READ).withThreshold(Duration.ofMillis(0));
-                recording.enable(IOEvent.EVENT_FILE_WRITE).withThreshold(Duration.ofMillis(0));
+                recording.enable(IOEvent.EVENT_FILE_WRITE).withThreshold(Duration.ofMillis(0));  
+                recording.enable(EventNames.FileReadIOStatistics);
+                recording.enable(EventNames.FileWriteIOStatistics);             
                 recording.start();
 
                 int writeByte = 47;
@@ -89,7 +92,10 @@ public class TestFileStreamEvents {
 
                 recording.stop();
                 List<RecordedEvent> events = Events.fromRecording(recording);
-                IOHelper.verifyEqualsInOrder(events, expectedEvents);
+                IOHelper.verifyEqualsInOrder(events, expectedEvents); 
+                Events.hasEvent(events, "jdk.FileWriteIOStatistics");
+                Events.hasEvent(events, "jdk.FileReadIOStatistics");
+         
             }
         }
     }

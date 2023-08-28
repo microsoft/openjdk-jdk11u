@@ -53,7 +53,9 @@ public class TestGetConfigurations {
     public static void main(String[] args) throws Throwable {
         List<Configuration> predefinedConfigs = Configuration.getConfigurations();
         Asserts.assertNotNull(predefinedConfigs, "List of predefined configs is null");
+        System.out.println("TestGetConfigurations.main()"+ListConfigByName(predefinedConfigs));
         Asserts.assertEquals(predefinedConfigs.size(), 2, "Expected exactly two predefined configurations");
+
 
         Configuration defaultConfig = findConfigByName(predefinedConfigs, DEFAULT_CONFIG_NAME);
         Asserts.assertNotNull(defaultConfig, "Config '" + DEFAULT_CONFIG_NAME + "' not found");
@@ -73,6 +75,13 @@ public class TestGetConfigurations {
             if (name.equals(config.getName())) {
                 return config;
             }
+        }
+        return null;
+    }
+
+     private static Configuration ListConfigByName(List<Configuration> configs) {
+        for (Configuration config : configs) {
+           System.out.println("config"+config.getName());
         }
         return null;
     }

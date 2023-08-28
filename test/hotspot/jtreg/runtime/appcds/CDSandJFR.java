@@ -51,6 +51,8 @@ public class CDSandJFR {
         "Hello",
         "GetFlightRecorder",
         "GetFlightRecorder$TestEvent",
+        "jdk/jfr/events/FileReadIOStatisticsEvent",
+        "jdk/jfr/events/FileWriteIOStatisticsEvent",
     };
 
     public static void main(String[] args) throws Exception {
