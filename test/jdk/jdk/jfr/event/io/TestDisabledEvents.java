@@ -75,8 +75,8 @@ public class TestDisabledEvents {
                 System.out.println("Got eventName:" + eventName);
                 assertNotEquals(eventName, IOEvent.EVENT_FILE_READ, "Got disabled read event");
                 assertNotEquals(eventName, IOEvent.EVENT_FILE_WRITE, "Got disabled write event");
-                assertNotEquals(eventName, EventNames.FileWriteIOStatistics, "Got disabled write event");
-                assertNotEquals(eventName, EventNames.FileWriteIOStatistics, "Got disabled write event");
+                assertNotEquals(eventName, EventNames.FileWriteIOStatistics, "Got disabled File I/O write event");
+                assertNotEquals(eventName, EventNames.FileReadIOStatistics, "Got disabled File I/O read event");
             }
         }
     }
