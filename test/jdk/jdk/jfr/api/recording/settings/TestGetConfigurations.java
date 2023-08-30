@@ -76,4 +76,5 @@ public class TestGetConfigurations {
         }
         return null;
     }
+
 }

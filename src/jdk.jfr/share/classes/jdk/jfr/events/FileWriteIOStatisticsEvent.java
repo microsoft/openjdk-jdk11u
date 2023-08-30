@@ -83,7 +83,7 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
         totalWriteBytesForPeriod.addAndGet(-result);       
         if (interval > 0) {
             totalDuration.addAndGet(-interval);
-            double intervalInSec = (interval * 1.0 / 1000000000);           
+            double intervalInSec = (interval * 1.0 / 1_000_000_000);           
             long wRate = (long) (result / intervalInSec);                  
             return wRate;
         }

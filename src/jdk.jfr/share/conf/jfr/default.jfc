@@ -587,7 +587,7 @@
 
     <event name="jdk.FileReadIOStatistics">
       <setting name="enabled">false</setting>
-      <setting name="period">10 ms</setting>
+      <setting name="period">1 s</setting>
     </event>
 
     <event name="jdk.FileWrite">
@@ -598,7 +598,7 @@
 
     <event name="jdk.FileWriteIOStatistics">
       <setting name="enabled">false</setting>
-      <setting name="period">10 s</setting>
+      <setting name="period">1 s</setting>
     </event>
 
     <event name="jdk.SocketRead">
