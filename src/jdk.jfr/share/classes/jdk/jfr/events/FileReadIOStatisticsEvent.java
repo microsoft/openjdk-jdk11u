@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -47,19 +47,16 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
         }
     };
 
-    // private variables
     private static AtomicLong totalReadBytesForPeriod = new AtomicLong(0);
     private static AtomicLong totalDuration = new AtomicLong(0);
-    private static AtomicLong totalReadBytesForProcess = new AtomicLong(0);
-    
+    private static AtomicLong totalReadBytesForProcess = new AtomicLong(0);    
 
     @Label("Read Rate (Bytes per Sec)")
     public long readRate;
 
     @Label("Total Accumulated Read Bytes")
-    public long accRead; // total accumulated
+    public long accRead; 
 
-    /* Getters */
     public static long getTotalReadBytesForProcess() {
         return totalReadBytesForProcess.get();
     } 
@@ -78,9 +75,16 @@ public final class FileReadIOStatisticsEvent extends AbstractJDKEvent {
         totalReadBytesForPeriod.addAndGet(bytesRead);
     }
 
-    // returning rate
+    /**
+     * Calculates and returns the read rate in bytes per second for the period mentioned in the jfc.
+     *
+     * This method computes the read rate by taking the total number of bytes read
+     * and the total duration of the read operation, then calculates the rate as
+     * bytes per second. If the interval is zero or negative, it returns 0.
+     *
+     * @return The read rate in bytes per second.
+    */      
     public static long getReadRateForPeriod() {
-        // decrement the value with the get the gettotal
         long result = getTotalReadBytesForPeriod();
         long interval = getTotalDuration();
         totalReadBytesForPeriod.addAndGet(-result);

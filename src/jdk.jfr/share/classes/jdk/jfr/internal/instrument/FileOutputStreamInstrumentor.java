@@ -50,7 +50,7 @@ final class FileOutputStreamInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b);
@@ -76,7 +76,7 @@ final class FileOutputStreamInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b);
@@ -103,7 +103,7 @@ final class FileOutputStreamInstrumentor {
 
         if (!event.isEnabled()) {
             write(b, off, len);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b, off, len);

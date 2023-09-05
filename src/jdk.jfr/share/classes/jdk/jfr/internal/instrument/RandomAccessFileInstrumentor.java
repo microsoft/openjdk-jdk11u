@@ -53,7 +53,7 @@ final class RandomAccessFileInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             return read();
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 result = read();
@@ -85,7 +85,7 @@ final class RandomAccessFileInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(b);
@@ -117,7 +117,7 @@ final class RandomAccessFileInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(b, off, len);
@@ -148,7 +148,7 @@ final class RandomAccessFileInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b);
@@ -170,11 +170,11 @@ final class RandomAccessFileInstrumentor {
     public void write(byte b[]) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
-
+        
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b);
@@ -201,7 +201,7 @@ final class RandomAccessFileInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b, off, len);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 write(b, off, len);

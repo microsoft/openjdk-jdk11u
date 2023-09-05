@@ -51,7 +51,7 @@ final class FileInputStreamInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             result = read();
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 result = read();
@@ -84,7 +84,7 @@ final class FileInputStreamInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(b);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(b);
@@ -100,7 +100,6 @@ final class FileInputStreamInstrumentor {
             }
         }
 
-        // may be we dont need this check, but we will await feedback from the team
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
             FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
@@ -118,11 +117,10 @@ final class FileInputStreamInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(b, off, len);
-
             } finally {
                 if (bytesRead < 0) {
                     event.endOfFile = true;

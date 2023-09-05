@@ -74,7 +74,7 @@ final class FileChannelImplInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(dst);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(dst);
@@ -106,7 +106,7 @@ final class FileChannelImplInstrumentor {
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesRead = read(dst, position);
-        } else if (event.isEnabled()) {
+        } else {
             try {
                 event.begin();
                 bytesRead = read(dst, position);
@@ -137,8 +137,8 @@ final class FileChannelImplInstrumentor {
 
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-            return read(dsts, offset, length);
-        } else if (event.isEnabled()) {
+            bytesRead = read(dsts, offset, length);
+        } else {
             try {
                 event.begin();
                 bytesRead = read(dsts, offset, length);
@@ -169,8 +169,8 @@ final class FileChannelImplInstrumentor {
         
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-            return write(src);
-        } else if (event.isEnabled()) {
+            bytesWritten = write(src);
+        } else {
             try {
                 event.begin();
                 bytesWritten = write(src);
@@ -197,8 +197,8 @@ final class FileChannelImplInstrumentor {
 
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-            return write(src, position);
-        } else if (event.isEnabled()) {
+            bytesWritten = write(src, position);
+        } else {
             try {
                 event.begin();
                 bytesWritten = write(src, position);
@@ -225,8 +225,8 @@ final class FileChannelImplInstrumentor {
 
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-            return write(srcs, offset, length);
-        } else if (event.isEnabled()) {
+             bytesWritten = write(srcs, offset, length);
+        } else {
             try {
                 event.begin();
                 bytesWritten = write(srcs, offset, length);

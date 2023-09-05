@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -54,10 +54,9 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
     @Label("Write Rate (Bytes per Sec)")
     public long writeRate;
 
-    @Label("Total Accumulated Write Bytes Process")
+    @Label("Total Accumulated Write Bytes")
     public long accWrite;
-
-    /** Getters */
+   
     public static long getTotalWriteBytesForProcess() {
         return totalWriteBytesForProcess.get();
     } 
@@ -76,8 +75,16 @@ public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
         return totalWriteBytesForPeriod.addAndGet(bytesWritten);
     }
 
+    /**
+     * Calculates and returns the write rate in bytes per second for the period mentioned in the jfc.
+     *
+     * This method computes the write rate by taking the total number of bytes written
+     * and the total duration of the write operation, then calculates the rate as
+     * bytes per second. If the interval is zero or negative, it returns 0.
+     *
+     * @return The write rate in bytes per second.
+    */     
     public static long getWriteRateForPeriod() {
-        // decrement the value with the get the gettotal
         long result = getTotalWriteBytesForPeriod();
         long interval = getTotalDuration();
         totalWriteBytesForPeriod.addAndGet(-result);       
