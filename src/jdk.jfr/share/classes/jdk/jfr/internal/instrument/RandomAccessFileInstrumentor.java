@@ -52,7 +52,7 @@ final class RandomAccessFileInstrumentor {
 
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-            return read();
+            result = read();
         } else {
             try {
                 event.begin();
