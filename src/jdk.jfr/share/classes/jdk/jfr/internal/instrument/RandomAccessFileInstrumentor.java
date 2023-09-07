@@ -70,7 +70,7 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;          
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(1, duration);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((result < 0 ? 0 : 1), duration);
         }
         return result;
     }
@@ -102,7 +102,7 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }
@@ -134,7 +134,7 @@ final class RandomAccessFileInstrumentor {
         }
         if (readPeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }

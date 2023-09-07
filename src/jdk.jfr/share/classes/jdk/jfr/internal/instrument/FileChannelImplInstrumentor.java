@@ -90,8 +90,8 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
+            long duration = System.nanoTime() - startTime;
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }
@@ -122,8 +122,8 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
+            long duration = System.nanoTime() - startTime;
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }
@@ -154,8 +154,8 @@ final class FileChannelImplInstrumentor {
             }
         }
         if (readPeriodicEvent.isEnabled()) {
-            long duration = System.nanoTime() - startTime;           
-            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(bytesRead, duration);
+            long duration = System.nanoTime() - startTime;
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }
@@ -166,7 +166,7 @@ final class FileChannelImplInstrumentor {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
         FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
         int bytesWritten = 0;
-        
+
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             bytesWritten = write(src);
@@ -183,7 +183,7 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod((bytesWritten > 0 ? bytesWritten : 0), duration);
         }
         return bytesWritten;
     }
@@ -211,7 +211,7 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod((bytesWritten > 0 ? bytesWritten : 0), duration);
         }
         return bytesWritten;
     }
@@ -225,7 +225,7 @@ final class FileChannelImplInstrumentor {
 
         long startTime = System.nanoTime();
         if (!event.isEnabled()) {
-             bytesWritten = write(srcs, offset, length);
+            bytesWritten = write(srcs, offset, length);
         } else {
             try {
                 event.begin();
@@ -239,7 +239,7 @@ final class FileChannelImplInstrumentor {
         }
         if (writePeriodicEvent.isEnabled()) {
             long duration = System.nanoTime() - startTime;
-            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(bytesWritten, duration);
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod((bytesWritten > 0 ? bytesWritten : 0), duration);
         }
         return bytesWritten;
     }
