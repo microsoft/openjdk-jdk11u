@@ -1,0 +1,48 @@
+# Microsoft patches applied to the Microsoft Build of OpenJDK
+#
+# This index file is ouur explicit record of patches we are maintaining for our build of
+# the OpenJDK until they are (a) merged upstream, (b) abandoned, or (c) no longer
+# required by Microsoft's internal processes (we use Azure DevOps for our builds and
+# test, for instance).
+#
+# For each patch branch, there  will be a file in the ms-patches/ folder that has the
+# name of the branch in it's file name (for example, this file follows that pattern).
+# The file is the source data for the README file we generate in the release branch, and
+# contains such information as Microsoft dev responsible for the patch, the original
+# author(s), associated JEP- or JBS- issue, and a summary of the patches' purpose.
+
+
+## Active Patches
+# Patches that we are applying to each release.
+active-patches:
+# - ms-patches/microsoft-patch-index // this patch branch is required for all releases
+  - ms-patches/8303607-ncrypt-leak-fix
+  - ms-patches/Backport-JDK-8305763
+  - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
+  - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
+  - ms-patches/JFR-command-duration-output
+  - ms-patches/JFR-command-duration-output
+  - ms-patches/JFR-deoptimization-event
+  - ms-patches/JFR-FileIOStatisticsEvents
+  - ms-patches/JFR-provide-object-age
+  - ms-patches/md5-intrinsics
+  - ms-patches/reduced-allocation-merges
+
+
+## Upsteamed Patches
+# Patches that we are no longer applying to our releases, as they
+# have been upstreamed and are part of the official OpenJDK sources.
+#
+# upstreamed-patches: 
+  # - ms-patches/abandoned-feature-branch-name-1
+  # ...
+  # - ms-patches/abandoned-feature-branch-name-N
+
+
+# Patches that we are no longer applying to our releases as they have
+# been abandoned for one reason or another.
+#
+# abandoned-patches:
+  # - ms-patches/abandoned-feature-branch-name-1
+  # ...
+  # - ms-patches/abandoned-feature-branch-name-N
