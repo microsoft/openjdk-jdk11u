@@ -25,6 +25,7 @@ active-patches:
   - ms-patches/JFR-FileIOStatisticsEvents
   - ms-patches/JFR-provide-object-age
   - ms-patches/md5-intrinsics
+  - ms-patches/off-by-1-AbsPathInImage-fix
   - ms-patches/reduced-allocation-merges
 
 
