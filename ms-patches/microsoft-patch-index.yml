@@ -21,7 +21,6 @@ active-patches:
   - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
   - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
   - ms-patches/JFR-command-duration-output
-  - ms-patches/JFR-command-duration-output
   - ms-patches/JFR-deoptimization-event
   - ms-patches/JFR-FileIOStatisticsEvents
   - ms-patches/JFR-provide-object-age
