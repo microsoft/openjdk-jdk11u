@@ -28,6 +28,7 @@ package jdk.jfr.internal.instrument;
 import java.io.IOException;
 
 import jdk.jfr.events.FileWriteEvent;
+import jdk.jfr.events.FileWriteIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -44,18 +45,25 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(int b) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
+        long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-            return;
+        } else {
+            try {
+                event.begin();
+                write(b);
+                event.bytesWritten = 1;
+            } finally {
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-        try {
-            event.begin();
-            write(b);
-            event.bytesWritten = 1;
-        } finally {
-            event.path = path;
-            event.commit();
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(1, duration);
         }
     }
 
@@ -63,18 +71,25 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(byte b[]) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+
+        long startTime = System.nanoTime();
         if (!event.isEnabled()) {
             write(b);
-            return;
+        } else {
+            try {
+                event.begin();
+                write(b);
+                event.bytesWritten = b.length;
+            } finally {
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-        try {
-            event.begin();
-            write(b);
-            event.bytesWritten = b.length;
-        } finally {
-            event.path = path;
-            event.commit();
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(b.length, duration);
         }
     }
 
@@ -82,18 +97,26 @@ final class FileOutputStreamInstrumentor {
     @JIInstrumentationMethod
     public void write(byte b[], int off, int len) throws IOException {
         FileWriteEvent event = FileWriteEvent.EVENT.get();
+        FileWriteIOStatisticsEvent writePeriodicEvent = FileWriteIOStatisticsEvent.EVENT.get();
+       
+        long startTime = System.nanoTime();
+
         if (!event.isEnabled()) {
             write(b, off, len);
-            return;
+        } else {
+            try {
+                event.begin();
+                write(b, off, len);
+                event.bytesWritten = len;
+            } finally {
+                event.path = path;
+                event.commit();
+                event.reset();
+            }
         }
-        try {
-            event.begin();
-            write(b, off, len);
-            event.bytesWritten = len;
-        } finally {
-            event.path = path;
-            event.commit();
-            event.reset();
+        if (writePeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;
+            FileWriteIOStatisticsEvent.setTotalWriteBytesForPeriod(len, duration);
         }
     }
 }

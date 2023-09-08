@@ -28,6 +28,7 @@ package jdk.jfr.internal.instrument;
 import java.io.IOException;
 
 import jdk.jfr.events.FileReadEvent;
+import jdk.jfr.events.FileReadIOStatisticsEvent;
 
 /**
  * See {@link JITracer} for an explanation of this code.
@@ -44,22 +45,31 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read() throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read();
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int result = 0;
-        try {
-            event.begin();
+
+        long startTime = System.nanoTime();
+        if (!event.isEnabled()) {
             result = read();
-            if (result < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = 1;
+        } else {
+            try {
+                event.begin();
+                result = read();
+                if (result < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = 1;
+                }
+            } finally {
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-        } finally {
-            event.path = path;
-            event.commit();
-            event.reset();
+
+        }
+        if (readPeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod(((result < 0) ? 0 : 1), duration);
         }
         return result;
     }
@@ -68,22 +78,31 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[]) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(b);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
-        try {
-            event.begin();
+
+        long startTime = System.nanoTime();
+        if (!event.isEnabled()) {
             bytesRead = read(b);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else {
+            try {
+                event.begin();
+                bytesRead = read(b);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            event.reset();
+        }
+
+        if (readPeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;           
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }
@@ -92,22 +111,30 @@ final class FileInputStreamInstrumentor {
     @JIInstrumentationMethod
     public int read(byte b[], int off, int len) throws IOException {
         FileReadEvent event = FileReadEvent.EVENT.get();
-        if (!event.isEnabled()) {
-            return read(b, off, len);
-        }
+        FileReadIOStatisticsEvent readPeriodicEvent = FileReadIOStatisticsEvent.EVENT.get();
         int bytesRead = 0;
-        try {
-            event.begin();
+
+        long startTime = System.nanoTime();
+        if (!event.isEnabled()) {
             bytesRead = read(b, off, len);
-        } finally {
-            if (bytesRead < 0) {
-                event.endOfFile = true;
-            } else {
-                event.bytesRead = bytesRead;
+        } else {
+            try {
+                event.begin();
+                bytesRead = read(b, off, len);
+            } finally {
+                if (bytesRead < 0) {
+                    event.endOfFile = true;
+                } else {
+                    event.bytesRead = bytesRead;
+                }
+                event.path = path;
+                event.commit();
+                event.reset();
             }
-            event.path = path;
-            event.commit();
-            event.reset();
+        }
+        if (readPeriodicEvent.isEnabled()) {
+            long duration = System.nanoTime() - startTime;                       
+            FileReadIOStatisticsEvent.setTotalReadBytesForPeriod((bytesRead < 0 ? 0 : bytesRead), duration);
         }
         return bytesRead;
     }

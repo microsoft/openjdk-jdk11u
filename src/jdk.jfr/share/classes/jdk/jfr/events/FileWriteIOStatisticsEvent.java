@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+package jdk.jfr.events;
+
+import jdk.jfr.Category;
+import jdk.jfr.Description;
+import jdk.jfr.Label;
+import jdk.jfr.Name;
+import jdk.jfr.StackTrace;
+import jdk.jfr.internal.Type;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Name(Type.EVENT_NAME_PREFIX + "FileWriteIOStatistics")
+@Label("FileWriteIO Statistics")
+@Category({ "Java Application", "Statistics" })
+@Description("Write Rate from the FileOutputStream, FileChannelImpl, RandomAccessFile")
+@StackTrace(false)
+public final class FileWriteIOStatisticsEvent extends AbstractJDKEvent {
+
+    public static final ThreadLocal<FileWriteIOStatisticsEvent> EVENT = new ThreadLocal<>() {
+        @Override
+        protected FileWriteIOStatisticsEvent initialValue() {
+            return new FileWriteIOStatisticsEvent();
+        }
+    };
+
+    private static AtomicLong totalWriteBytesForProcess = new AtomicLong(0);
+    private static AtomicLong totalWriteBytesForPeriod = new AtomicLong(0);
+    private static AtomicLong totalDuration = new AtomicLong(0);
+
+    @Label("Write Rate (Bytes per Sec)")
+    public long writeRate;
+
+    @Label("Total Accumulated Write Bytes")
+    public long accWrite;
+   
+    public static long getTotalWriteBytesForProcess() {
+        return totalWriteBytesForProcess.get();
+    } 
+
+    public static long getTotalDuration() {
+        return totalDuration.get();
+    }
+
+    public static long getTotalWriteBytesForPeriod() {
+        return totalWriteBytesForPeriod.get();
+    }
+
+    public static long setTotalWriteBytesForPeriod(long bytesWritten, long duration) {
+        totalDuration.addAndGet(duration);
+        totalWriteBytesForProcess.addAndGet(bytesWritten);
+        return totalWriteBytesForPeriod.addAndGet(bytesWritten);
+    }
+
+    /**
+     * Calculates and returns the write rate in bytes per second for the period mentioned in the jfc.
+     *
+     * This method computes the write rate by taking the total number of bytes written
+     * and the total duration of the write operation, then calculates the rate as
+     * bytes per second. If the interval is zero or negative, it returns 0.
+     *
+     * @return The write rate in bytes per second.
+    */     
+    public static long getWriteRateForPeriod() {
+        long result = getTotalWriteBytesForPeriod();
+        long interval = getTotalDuration();
+        totalWriteBytesForPeriod.addAndGet(-result);       
+        if (interval > 0) {
+            totalDuration.addAndGet(-interval);
+            double intervalInSec = (interval * 1.0 / 1_000_000_000);           
+            long wRate = (long) (result / intervalInSec);                  
+            return wRate;
+        }
+        return 0;
+    }
+}

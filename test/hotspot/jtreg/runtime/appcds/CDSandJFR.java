@@ -41,6 +41,8 @@ public class CDSandJFR {
         "jdk/jfr/Event",
         "jdk/jfr/events/FileReadEvent",
         "jdk/jfr/events/FileWriteEvent",
+        "jdk/jfr/events/FileReadIOStatisticsEvent",
+        "jdk/jfr/events/FileWriteIOStatisticsEvent",
         "jdk/jfr/events/SocketReadEvent",
         "jdk/jfr/events/SocketWriteEvent",
         "jdk/jfr/events/ExceptionThrownEvent",
@@ -50,7 +52,7 @@ public class CDSandJFR {
         "jdk/jfr/events/ActiveRecordingEvent",
         "Hello",
         "GetFlightRecorder",
-        "GetFlightRecorder$TestEvent",
+        "GetFlightRecorder$TestEvent",       
     };
 
     public static void main(String[] args) throws Exception {
