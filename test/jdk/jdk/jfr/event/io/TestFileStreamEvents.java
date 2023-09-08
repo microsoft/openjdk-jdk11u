@@ -93,8 +93,8 @@ public class TestFileStreamEvents {
                 recording.stop();
                 List<RecordedEvent> events = Events.fromRecording(recording);
                 IOHelper.verifyEqualsInOrder(events, expectedEvents); 
-                Events.hasEvent(events, "jdk.FileWriteIOStatistics");
-                Events.hasEvent(events, "jdk.FileReadIOStatistics");
+                Events.hasEvent(events, EventNames.FileReadIOStatistics);
+                Events.hasEvent(events, EventNames.FileWriteIOStatistics);
          
             }
         }
