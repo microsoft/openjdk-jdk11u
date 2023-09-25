@@ -91,10 +91,8 @@ endif
 ifeq ($(BUILD_CDS_ARCHIVE), true)
   ifeq ($(OPENJDK_TARGET_OS), windows)
 		CDS_ARCHIVE := bin/server/classes.jsa
-		CDS_NOCOOPS_ARCHIVE := bin/server/classes_nocoops.jsa
   else
 		CDS_ARCHIVE := lib/server/classes.jsa
-		CDS_NOCOOPS_ARCHIVE := lib/server/classes_nocoops.jsa
   endif
 endif
 
