@@ -113,7 +113,7 @@ void C2Compiler::compile_method(ciEnv* env, ciMethod* target, int entry_bci, Dir
   bool do_escape_analysis = DoEscapeAnalysis && !env->should_retain_local_variables()
                                              && !env->jvmti_can_get_owned_monitor_info();
   bool do_iterative_escape_analysis = DoEscapeAnalysis;
-  bool do_reduce_allocation_merges = ReduceAllocationMerges;
+  bool do_reduce_allocation_merges = ReduceAllocationMerges && EliminateAllocations;
   bool eliminate_boxing = EliminateAutoBox;
   bool do_locks_coarsening = EliminateLocks;
 
