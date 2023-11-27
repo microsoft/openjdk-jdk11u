@@ -6,10 +6,10 @@
 # test, for instance).
 #
 # For each patch branch, there  will be a file in the ms-patches/ folder that has the
-# name of the branch in it's file name (for example, this file follows that pattern).
+# name of the branch in its file name (for example, this file follows that pattern).
 # The file is the source data for the README file we generate in the release branch, and
 # contains such information as Microsoft dev responsible for the patch, the original
-# author(s), associated JEP- or JBS- issue, and a summary of the patches' purpose.
+# author(s), associated JEP- or JBS- issue, and a summary of the patch's purpose.
 
 
 ## Active Patches
@@ -20,11 +20,11 @@ active-patches:
   - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
   - ms-patches/JFR-command-duration-output
   - ms-patches/JFR-deoptimization-event
-  - ms-patches/JFR-FileIOStatisticsEvents
   - ms-patches/JFR-provide-object-age
   - ms-patches/md5-intrinsics
   - ms-patches/off-by-1-AbsPathInImage-fix
   - ms-patches/reduced-allocation-merges
+  - ms-patches/sst
 
 
 ## Upstreamed Patches
