@@ -16,8 +16,6 @@
 # Patches that we are applying to each release.
 active-patches:
 # - ms-patches/microsoft-patch-index // this patch branch is required for all releases
-  - ms-patches/8303607-ncrypt-leak-fix
-  - ms-patches/Backport-JDK-8305763
   - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
   - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
   - ms-patches/JFR-command-duration-output
@@ -29,20 +27,19 @@ active-patches:
   - ms-patches/reduced-allocation-merges
 
 
-## Upsteamed Patches
+## Upstreamed Patches
 # Patches that we are no longer applying to our releases, as they
 # have been upstreamed and are part of the official OpenJDK sources.
 #
 # upstreamed-patches: 
-  # - ms-patches/abandoned-feature-branch-name-1
-  # ...
-  # - ms-patches/abandoned-feature-branch-name-N
+  - ZZ_archive/ms-patches/8303607-ncrypt-leak-fix
+  - ZZ_archive/ms-patches/Backport-JDK-8305763-URIParsing
 
 
 # Patches that we are no longer applying to our releases as they have
 # been abandoned for one reason or another.
 #
 # abandoned-patches:
-  # - ms-patches/abandoned-feature-branch-name-1
+  # - ZZ_archive/ms-patches/abandoned-feature-branch-name-1
   # ...
-  # - ms-patches/abandoned-feature-branch-name-N
+  # - ZZ_archive/ms-patches/abandoned-feature-branch-name-N
