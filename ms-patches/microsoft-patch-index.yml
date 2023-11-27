@@ -23,7 +23,7 @@ active-patches:
   - ms-patches/JFR-provide-object-age
   - ms-patches/md5-intrinsics
   - ms-patches/off-by-1-AbsPathInImage-fix
-  - ms-patches/reduced-allocation-merges
+  - ms-patches/reduce-allocation-merges
   - ms-patches/sst
 
 
