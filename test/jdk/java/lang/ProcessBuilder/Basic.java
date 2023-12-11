@@ -2135,7 +2135,7 @@ public class Basic {
 
         //----------------------------------------------------------------
         // Check that reads which are pending when Process.destroy is
-        // called, get EOF, not IOException("Stream closed").
+        // called, get EOF, or IOException("Stream closed").
         //----------------------------------------------------------------
         try {
             final int cases = 4;
@@ -2188,7 +2188,25 @@ public class Basic {
                                 case 2: r = s.read(bytes); break;
                                 default: throw new Error();
                             }
+                            if (r >= 0) {
+                                // The child sent unexpected output; print it to diagnose
+                                System.out.println("Unexpected child output:");
+                                if ((action & 0x2) == 0) {
+                                    System.out.write(r);    // Single character
+
+                                } else {
+                                    System.out.write(bytes, 0, r);
+                                }
+                                for (int c = s.read(); c >= 0; c = s.read())
+                                    System.out.write(c);
+                                System.out.println("\nEND Child output.");
+                            }
                             equal(-1, r);
+                        } catch (IOException ioe) {
+                            if (!ioe.getMessage().equals("Stream closed")) {
+                                // BufferedInputStream may throw IOE("Stream closed").
+                                unexpected(ioe);
+                            }
                         } catch (Throwable t) { unexpected(t); }}};
 
                 thread.start();

@@ -32,6 +32,8 @@
  *          jdk.jartool/sun.tools.jar
  * @build HelloString
  * @run main SharedStringsBasic
+ * @run main/othervm -XX:+UseStringDeduplication SharedStringsBasic
+ * @run main/othervm -XX:-CompactStrings SharedStringsBasic
  */
 import jdk.test.lib.process.OutputAnalyzer;
 import jdk.test.lib.process.ProcessTools;
@@ -46,7 +48,7 @@ public class SharedStringsBasic {
         String sharedArchiveConfigFile =
             TestCommon.getSourceFile("SharedStringsBasic.txt").toString();
 
-        ProcessBuilder dumpPb = ProcessTools.createJavaProcessBuilder(true,
+        ProcessBuilder dumpPb = ProcessTools.createTestJvm(
           TestCommon.makeCommandLineForAppCDS(
             "-cp", appJar,
             "-XX:SharedArchiveConfigFile=" + sharedArchiveConfigFile,
@@ -58,7 +60,7 @@ public class SharedStringsBasic {
             .shouldContain("Shared string table stats")
             .shouldHaveExitValue(0);
 
-        ProcessBuilder runPb = ProcessTools.createJavaProcessBuilder(true,
+        ProcessBuilder runPb = ProcessTools.createTestJvm(
           TestCommon.makeCommandLineForAppCDS(
             "-cp", appJar,
             "-XX:SharedArchiveFile=./SharedStringsBasic.jsa",
