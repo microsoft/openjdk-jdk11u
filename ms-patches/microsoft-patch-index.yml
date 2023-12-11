@@ -24,7 +24,6 @@ active-patches:
   - ms-patches/md5-intrinsics
   - ms-patches/off-by-1-AbsPathInImage-fix
   - ms-patches/reduce-allocation-merges
-  - ms-patches/sst
 
 
 ## Upstreamed Patches
@@ -34,6 +33,7 @@ active-patches:
 # upstreamed-patches: 
   - ZZ_archive/ms-patches/8303607-ncrypt-leak-fix
   - ZZ_archive/ms-patches/Backport-JDK-8305763-URIParsing
+  - ZZ_archive/ms-patches/sst
 
 
 # Patches that we are no longer applying to our releases as they have
