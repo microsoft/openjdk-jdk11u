@@ -9,4 +9,4 @@ title: JFR-Backport-Make JFR command duration output more user friendly
   - Add utility methods to convert time format to more user friendly format.
   - This is a backport of the original commit "https://hg.openjdk.org/jdk/jdk/rev/43eee1237934" to JDK 11.
   - Clean backport, no differences with original commit.
-- release_note: Backport - Make JFR command duration output more user friendly
+- release_note: Make the output of the JFR command duration more user friendly.
