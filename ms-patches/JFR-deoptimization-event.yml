@@ -10,4 +10,4 @@ title: JFR-Backport-Add support for the deoptimization events
   - This is a backport of the original commit "https://hg.openjdk.org/jdk/jdk/rev/de99f7acea70" to JDK 11.
   - Modifications were made to be compatible with JDK 11, including adding necessary includes, reordering arguments in Atomic::cmpxchg, reintroducing and setting require_safepoint to false in register_serializer, and adjusting method calls in jfrTypeManager.cpp for compatibility.
   - More details can be found in the PR (https://github.com/microsoft/openjdk-jdk11u/pull/6)
-- release_note: Backport - Add support for new JFR deoptimization events
+- release_note: Add support for new JFR deoptimization events
