@@ -10,4 +10,4 @@ title: JFR-Backport-8217089-Lazy install OS Interface for improved startup perfo
   - These changes lets the periodic event requestor thread install os interface components when requested instead of doing it eagerly as part of startup by the initial thread.
   - This is a backport of the original commit "https://hg.openjdk.org/jdk/jdk/rev/e63a624da347" to JDK 11.
   - Clean backport, no differences with original commit.
-- release_note: Backport - Lazy install OS interface components in JFR for improved startup performance
+- release_note: Lazy install os interface components for improved startup
