@@ -7,7 +7,7 @@ title: JFR-Backport-Provide object age
   - aamarsh
 - details:
   - Add "Object Age" field with the OldObjectSample JFR Event.
-  - This is a backport of the original comit "https://github.com/openjdk/jdk/commit/0cdb4d19f323b7d4168bc94c840b9ef6d5a02713" to JDK 11.
+  - This is a backport of the original commit "https://github.com/openjdk/jdk/commit/0cdb4d19f323b7d4168bc94c840b9ef6d5a02713" to JDK 11.
   - Clean backport of the original commit.  
   - Object age can be a useful information when looking for memory leaks.
-- release_note: Backport - Add "Object Age" field for the OldObjectSample JFR Event.
+- release_note: Provide object age with JFR OldObjectSample event.
