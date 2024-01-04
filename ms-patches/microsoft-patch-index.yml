@@ -24,6 +24,7 @@ active-patches:
   - ms-patches/md5-intrinsics
   - ms-patches/off-by-1-AbsPathInImage-fix
   - ms-patches/reduce-allocation-merges
+  - ms-patches/8306688-sst
 
 
 ## Upstreamed Patches
