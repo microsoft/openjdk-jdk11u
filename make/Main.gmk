@@ -108,7 +108,6 @@ ALL_TARGETS += generate-exported-symbols
 #
 # When creating a BUILDJDK, the java targets have already been built and copied
 # into the buildjdk so no need to generate sources.
-ifneq ($(CREATING_BUILDJDK), true)
   $(eval $(call DeclareRecipesForPhase, GENSRC, \
       TARGET_SUFFIX := gensrc-src, \
       FILE_PREFIX := Gensrc, \
@@ -142,7 +141,7 @@ ifneq ($(CREATING_BUILDJDK), true)
   endef
 
   $(foreach m, $(GENSRC_MODULEINFO_MODULES), $(eval $(call DeclareModuleInfoRecipe,$m)))
-endif
+
 
 ALL_TARGETS += $(GENSRC_TARGETS)
 
@@ -752,9 +751,7 @@ else
   # Skip modules that do not have java source.
   # When creating a BUILDJDK, the java compilation has already been done by the
   # normal build and copied in.
-  ifneq ($(CREATING_BUILDJDK), true)
     $(foreach m, $(filter $(JAVA_MODULES), $(LIBS_MODULES)), $(eval $m-libs: $m-java))
-  endif
 
   # Declare dependencies from all other <module>-lib to java.base-lib
   $(foreach t, $(filter-out java.base-libs, $(LIBS_TARGETS)), \
