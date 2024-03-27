@@ -105,44 +105,39 @@ ALL_TARGETS += generate-exported-symbols
 
 ################################################################################
 # Gensrc targets, generating source before java compilation can be done
-#
-# When creating a BUILDJDK, the java targets have already been built and copied
-# into the buildjdk so no need to generate sources.
-ifneq ($(CREATING_BUILDJDK), true)
-  $(eval $(call DeclareRecipesForPhase, GENSRC, \
-      TARGET_SUFFIX := gensrc-src, \
-      FILE_PREFIX := Gensrc, \
-      MAKE_SUBDIR := gensrc, \
-      CHECK_MODULES := $(ALL_MODULES), \
-  ))
+$(eval $(call DeclareRecipesForPhase, GENSRC, \
+    TARGET_SUFFIX := gensrc-src, \
+    FILE_PREFIX := Gensrc, \
+    MAKE_SUBDIR := gensrc, \
+    CHECK_MODULES := $(ALL_MODULES), \
+))
 
-  $(foreach m, $(GENSRC_MODULES), $(eval $m-gensrc: $m-gensrc-src))
+$(foreach m, $(GENSRC_MODULES), $(eval $m-gensrc: $m-gensrc-src))
 
-  LANGTOOLS_GENSRC_TARGETS := $(filter $(addsuffix -%, $(LANGTOOLS_MODULES)), $(GENSRC_TARGETS))
-  INTERIM_LANGTOOLS_GENSRC_TARGETS := $(filter $(addsuffix -%, \
-      $(INTERIM_LANGTOOLS_BASE_MODULES)), $(GENSRC_TARGETS))
-  HOTSPOT_GENSRC_TARGETS := $(filter $(addsuffix -%, $(HOTSPOT_MODULES)), $(GENSRC_TARGETS))
-  JDK_GENSRC_TARGETS := $(filter-out $(LANGTOOLS_GENSRC_TARGETS) \
-      $(HOTSPOT_GENSRC_TARGETS), $(GENSRC_TARGETS))
+LANGTOOLS_GENSRC_TARGETS := $(filter $(addsuffix -%, $(LANGTOOLS_MODULES)), $(GENSRC_TARGETS))
+INTERIM_LANGTOOLS_GENSRC_TARGETS := $(filter $(addsuffix -%, \
+    $(INTERIM_LANGTOOLS_BASE_MODULES)), $(GENSRC_TARGETS))
+HOTSPOT_GENSRC_TARGETS := $(filter $(addsuffix -%, $(HOTSPOT_MODULES)), $(GENSRC_TARGETS))
+JDK_GENSRC_TARGETS := $(filter-out $(LANGTOOLS_GENSRC_TARGETS) \
+    $(HOTSPOT_GENSRC_TARGETS), $(GENSRC_TARGETS))
 
-  GENSRC_MODULEINFO_MODULES := $(ALL_MODULES)
-  GENSRC_MODULEINFO_TARGETS := $(addsuffix -gensrc-moduleinfo, \
-      $(GENSRC_MODULEINFO_MODULES))
+GENSRC_MODULEINFO_MODULES := $(ALL_MODULES)
+GENSRC_MODULEINFO_TARGETS := $(addsuffix -gensrc-moduleinfo, \
+    $(GENSRC_MODULEINFO_MODULES))
 
-  GENSRC_MODULES := $(GENSRC_MODULEINFO_MODULES)
-  GENSRC_TARGETS += $(sort $(GENSRC_MODULEINFO_TARGETS) \
-      $(addsuffix -gensrc, $(GENSRC_MODULES)))
+GENSRC_MODULES := $(GENSRC_MODULEINFO_MODULES)
+GENSRC_TARGETS += $(sort $(GENSRC_MODULEINFO_TARGETS) \
+    $(addsuffix -gensrc, $(GENSRC_MODULES)))
 
-  define DeclareModuleInfoRecipe
-    $1-gensrc-moduleinfo:
+define DeclareModuleInfoRecipe
+  $1-gensrc-moduleinfo:
 	+($(CD) $(TOPDIR)/make && $(MAKE) $(MAKE_ARGS) \
 	    -f gensrc/GensrcModuleInfo.gmk MODULE=$1)
 
-    $1-gensrc: $1-gensrc-moduleinfo
-  endef
+  $1-gensrc: $1-gensrc-moduleinfo
+endef
 
-  $(foreach m, $(GENSRC_MODULEINFO_MODULES), $(eval $(call DeclareModuleInfoRecipe,$m)))
-endif
+$(foreach m, $(GENSRC_MODULEINFO_MODULES), $(eval $(call DeclareModuleInfoRecipe,$m)))
 
 ALL_TARGETS += $(GENSRC_TARGETS)
 
@@ -750,11 +745,7 @@ else
 
   # Declare dependencies from <module>-lib to <module>-java
   # Skip modules that do not have java source.
-  # When creating a BUILDJDK, the java compilation has already been done by the
-  # normal build and copied in.
-  ifneq ($(CREATING_BUILDJDK), true)
-    $(foreach m, $(filter $(JAVA_MODULES), $(LIBS_MODULES)), $(eval $m-libs: $m-java))
-  endif
+  $(foreach m, $(filter $(JAVA_MODULES), $(LIBS_MODULES)), $(eval $m-libs: $m-java))
 
   # Declare dependencies from all other <module>-lib to java.base-lib
   $(foreach t, $(filter-out java.base-libs, $(LIBS_TARGETS)), \
