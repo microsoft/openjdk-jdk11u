@@ -110,13 +110,13 @@ ALL_TARGETS += generate-exported-symbols
 # into the buildjdk so no need to generate sources.
 ifneq ($(CREATING_BUILDJDK), true)
   GENERATE_BUILDJDK_SOURCES := true
-endif
-
-# Windows AArch64 is built by cross compiling. Therefore, the buildjdk sources
-# need to be generated unconditionally to avoid a 'No rule to make target
-# windows/conf/tzmappings' error
-ifeq ($(OPENJDK_TARGET_OS)+$(COMPILE_TYPE), windows+cross)
+else ifeq ($(OPENJDK_TARGET_OS)+$(COMPILE_TYPE), windows+cross)
+ # Windows AArch64 is built by cross compiling. Therefore, the buildjdk sources
+ # need to be generated unconditionally to avoid a 'No rule to make target
+ # windows/conf/tzmappings' error
   GENERATE_BUILDJDK_SOURCES := true
+else
+  GENERATE_BUILDJDK_SOURCES :=
 endif
 
 ifeq ($(GENERATE_BUILDJDK_SOURCES), true)
