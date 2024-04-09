@@ -25,6 +25,7 @@ active-patches:
   - ms-patches/off-by-1-AbsPathInImage-fix
   - ms-patches/reduce-allocation-merges
   - ms-patches/8306688-sst
+  - ms-patches/win-aarch64-build-error-8329348
 
 
 ## Upstreamed Patches
