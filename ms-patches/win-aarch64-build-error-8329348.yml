@@ -1,0 +1,12 @@
+title: Fix Windows AArch64 jdk11u build error
+- work_item: 1993805
+- jbs_bug: JDK-8329348
+- author: swesonga
+- owner: swesonga
+- contributors:
+- details:
+  - Fixes the Windows AArch64 jdk11u build error 'No rule to make target .../windows/conf/tzmappings'.
+  - The root cause of this error is that the GENSRC_TARGETS are not built.
+  - This fix removes checks for CREATING_BUILDJDK to ensure that the GENSRC_TARGETS are built unconditionally.
+  - These checks were also found to be incorrect in https://bugs.openjdk.org/browse/JDK-8217739
+- release_note:
