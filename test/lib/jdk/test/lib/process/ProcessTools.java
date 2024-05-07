@@ -285,6 +285,50 @@ public final class ProcessTools {
     }
 
     /**
+     * Create ProcessBuilder using the java launcher from the jdk to
+     * be tested.
+     *
+     * <p><b>Please observe that you likely should use
+     * createTestJavaProcessBuilder() instead of this method because
+     * createTestJavaProcessBuilder() will add JVM options from
+     * "test.vm.opts" and "test.java.opts"</b> and this method will
+     * not do that.
+     *
+     * <p>If you still chose to use
+     * createLimitedTestJavaProcessBuilder() you should probably use
+     * it in combination with <b>@requires vm.flagless</b> JTREG
+     * anotation as to not waste energy and test resources.
+     *
+     * @param command Arguments to pass to the java command.
+     * @return The ProcessBuilder instance representing the java command.
+     */
+    public static ProcessBuilder createLimitedTestJavaProcessBuilder(List<String> command) {
+        return createLimitedTestJavaProcessBuilder(command.toArray(String[]::new));
+    }
+
+    /**
+     * Create ProcessBuilder using the java launcher from the jdk to
+     * be tested.
+     *
+     * <p><b>Please observe that you likely should use
+     * createTestJavaProcessBuilder() instead of this method because
+     * createTestJavaProcessBuilder() will add JVM options from
+     * "test.vm.opts" and "test.java.opts"</b> and this method will
+     * not do that.
+     *
+     * <p>If you still chose to use
+     * createLimitedTestJavaProcessBuilder() you should probably use
+     * it in combination with <b>@requires vm.flagless</b> JTREG
+     * anotation as to not waste energy and test resources.
+     *
+     * @param command Arguments to pass to the java command.
+     * @return The ProcessBuilder instance representing the java command.
+     */
+    public static ProcessBuilder createLimitedTestJavaProcessBuilder(String... command) {
+        return createJavaProcessBuilder(command);
+    }
+
+    /**
      * Create ProcessBuilder using the java launcher from the jdk to be tested.
      * <p>
      * @param command Arguments to pass to the java command.
