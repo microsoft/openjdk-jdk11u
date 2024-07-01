@@ -22,8 +22,8 @@
  *
  */
 
-// Must be at least Windows Vista or Server 2008 to use InitOnceExecuteOnce
-#define _WIN32_WINNT 0x0600
+// Must be at least Windows 7 or Server 2008 R2 to use GetProcessGroupAffinity
+#define _WIN32_WINNT 0x0601
 
 // no precompiled headers
 #include "jvm.h"
