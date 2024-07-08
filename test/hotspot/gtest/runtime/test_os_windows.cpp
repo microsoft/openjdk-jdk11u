@@ -617,4 +617,23 @@ TEST_VM(os_windows, handle_long_paths) {
   delete_empty_rel_directory_w(nearly_long_rel_path);
 }
 
+TEST_VM(os_windows, processor_count) {
+  JVMFlag* flag = JVMFlag::find_flag("UseAllWindowsProcessorGroups");
+  EXPECT_NE(flag, nullptr) << "Expected UseAllWindowsProcessorGroups product flag to be available";
+
+  int processors = os::processor_count();
+  EXPECT_GT(processors, 0) << "Expected at least 1 processor";
+
+  int active_processors = os::active_processor_count();
+  EXPECT_GT(active_processors, 0) << "Expected at least 1 active processor";
+
+  bool schedules_all_processor_groups = os::win32::is_windows_11_or_greater() || os::win32::is_windows_server_2022_or_greater();
+  if (schedules_all_processor_groups && UseAllWindowsProcessorGroups) {
+    EXPECT_EQ(active_processors, processors) << "Expected all processors to be active";
+  } else {
+    // active_processors should be at most the number of processors in 1 Windows processor group.
+    EXPECT_LE(active_processors, processors) << "Expected active processors to not exceed available processors";
+  }
+}
+
 #endif
