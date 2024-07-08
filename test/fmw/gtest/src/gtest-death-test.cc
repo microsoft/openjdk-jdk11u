@@ -1209,20 +1209,21 @@ static int ExecDeathTestChildMain(void* child_arg) {
 // GTEST_NO_INLINE_ is required to prevent GCC 4.6 from inlining
 // StackLowerThanAddress into StackGrowsDown, which then doesn't give
 // correct answer.
-static void StackLowerThanAddress(const void* ptr,
-                                  bool* result) GTEST_NO_INLINE_;
-static void StackLowerThanAddress(const void* ptr, bool* result) {
-  int dummy;
-  *result = (&dummy < ptr);
-}
+//static void StackLowerThanAddress(const void* ptr,
+//                                  bool* result) GTEST_NO_INLINE_;
+//static void StackLowerThanAddress(const void* ptr, bool* result) {
+//  int dummy;
+//  *result = (&dummy < ptr);
+//}
 
 // Make sure AddressSanitizer does not tamper with the stack here.
 GTEST_ATTRIBUTE_NO_SANITIZE_ADDRESS_
 static bool StackGrowsDown() {
-  int dummy;
-  bool result;
-  StackLowerThanAddress(&dummy, &result);
-  return result;
+  //int dummy;
+  //bool result;
+  //StackLowerThanAddress(&dummy, &result);
+  //return result;
+  return false;
 }
 #  endif  // GTEST_HAS_CLONE
 
