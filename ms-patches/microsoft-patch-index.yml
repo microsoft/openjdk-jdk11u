@@ -26,6 +26,7 @@ active-patches:
   - ms-patches/reduce-allocation-merges
   - ms-patches/8306688-sst
   - ms-patches/win-aarch64-build-error-8329348
+  - ms-patches/use-all-windows-processor-groups
 
 
 ## Upstreamed Patches
