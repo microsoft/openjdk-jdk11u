@@ -1291,6 +1291,9 @@ class Compile : public Phase {
   void Process_OopMap_Node(MachNode *mach, int code_offset);
 
   bool contains_as_owner(GrowableArray<MonitorValue*> *monarray, ObjectValue *ov) const;
+  bool contains_as_scalarized(JVMState* jvms, MachSafePointNode* sfn,
+                              GrowableArray<ScopeValue*>* objs,
+                              ObjectValue* ov) const;
 
   // Initialize code buffer
   CodeBuffer* init_buffer(uint* blk_starts);
