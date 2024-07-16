@@ -27,6 +27,7 @@ active-patches:
   - ms-patches/8306688-sst
   - ms-patches/win-aarch64-build-error-8329348
   - ms-patches/use-all-windows-processor-groups
+  - ms-patches/gettemppath2
 
 
 ## Upstreamed Patches
