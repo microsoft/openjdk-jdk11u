@@ -848,6 +848,10 @@ bool os::bind_to_processor(uint processor_id) {
   return false;
 }
 
+// For dynamic lookup of GetTempPath2 API
+typedef DWORD (WINAPI *GetTempPath2AFnPtr)(DWORD, LPSTR);
+static GetTempPath2AFnPtr _GetTempPath2A = nullptr;
+
 void os::win32::initialize_performance_counter() {
   LARGE_INTEGER count;
   QueryPerformanceFrequency(&count);
@@ -1233,12 +1237,16 @@ int os::closedir(DIR *dirp) {
 // directory not the java application's temp directory, ala java.io.tmpdir.
 const char* os::get_temp_directory() {
   static char path_buf[MAX_PATH];
-  if (GetTempPath(MAX_PATH, path_buf) > 0) {
-    return path_buf;
-  } else {
-    path_buf[0] = '\0';
+  if (_GetTempPath2A != nullptr) {
+    if (_GetTempPath2A(MAX_PATH, path_buf) > 0) {
+      return path_buf;
+    }
+  }
+  else if (GetTempPath(MAX_PATH, path_buf) > 0) {
     return path_buf;
   }
+  path_buf[0] = '\0';
+  return path_buf;
 }
 
 // Needs to be in os specific directory because windows requires another
@@ -4336,6 +4344,17 @@ jint os::init_2(void) {
   if (!ReduceSignalUsage) {
     jdk_misc_signal_init();
   }
+
+  // Lookup GetTempPath2 - the docs state we must use runtime-linking of
+  // kernelbase.dll, so that is what we do.
+  HINSTANCE _kernelbase = LoadLibrary(TEXT("kernelbase.dll"));
+  if (_kernelbase != nullptr) {
+    _GetTempPath2A =
+      reinterpret_cast<GetTempPath2AFnPtr>(
+                                         GetProcAddress(_kernelbase,
+                                                        "GetTempPath2A"));
+  }
+  log_info(os, thread)("The _GetTempPath2A API is%s available.", _GetTempPath2A == nullptr ? " not" : "");
 
   return JNI_OK;
 }
