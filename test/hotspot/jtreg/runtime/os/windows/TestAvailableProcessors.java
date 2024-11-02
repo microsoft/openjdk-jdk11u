@@ -28,7 +28,6 @@
  * @requires os.family == "windows"
  * @summary This test verifies that OpenJDK can use all available
  *          processors on Windows 11/Windows Server 2022 and later.
- * @requires vm.flagless
  * @library /test/lib
  * @compile GetAvailableProcessors.java
  * @run testng TestAvailableProcessors
