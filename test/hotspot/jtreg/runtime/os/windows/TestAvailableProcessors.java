@@ -28,7 +28,6 @@
  * @requires os.family == "windows"
  * @summary This test verifies that OpenJDK can use all available
  *          processors on Windows 11/Windows Server 2022 and later.
- * @requires vm.flagless
  * @library /test/lib
  * @compile GetAvailableProcessors.java
  * @run testng TestAvailableProcessors
@@ -38,6 +37,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class TestAvailableProcessors {
         OutputAnalyzer outputAnalyzer = new OutputAnalyzer(processBuilder.start());
         outputAnalyzer.shouldHaveExitValue(0);
         outputAnalyzer.shouldContain(osVersionMessage);
-        List<String> lines = outputAnalyzer.stdoutAsLines();
+        List<String> lines = asLines(outputAnalyzer.getStdout());
 
         String osVersion = null;
         for (var line: lines) {
@@ -78,6 +78,10 @@ public class TestAvailableProcessors {
 
         System.out.println("Found OS version: " + osVersion);
         return osVersion;
+    }
+
+    private static List<String> asLines(String buffer) {
+        return Arrays.asList(buffer.split("\\R"));
     }
 
     private static boolean getSchedulesAllProcessorGroups(boolean isWindowsServer) throws IOException {
@@ -115,7 +119,7 @@ public class TestAvailableProcessors {
     private static OutputAnalyzer getAvailableProcessorsOutput(boolean productFlagEnabled) throws IOException {
         String productFlag = productFlagEnabled ? "-XX:+UseAllWindowsProcessorGroups" : "-XX:-UseAllWindowsProcessorGroups";
 
-        ProcessBuilder processBuilder = ProcessTools.createLimitedTestJavaProcessBuilder(
+        ProcessBuilder processBuilder = ProcessTools.createJavaProcessBuilder(
             new String[] {productFlag, "GetAvailableProcessors"}
         );
 
@@ -128,7 +132,7 @@ public class TestAvailableProcessors {
 
     private static int getAvailableProcessors(OutputAnalyzer outputAnalyzer) {
         int runtimeAvailableProcs = 0;
-        List<String> output = outputAnalyzer.stdoutAsLines();
+        List<String> output = asLines(outputAnalyzer.getStdout());
 
         for (var line: output) {
             if (line.startsWith(runtimeAvailableProcessorsMessage)) {
@@ -188,7 +192,7 @@ public class TestAvailableProcessors {
         boolean isWindowsServer = false;
         var processorGroupSizes = new HashSet<Integer>();
 
-        List<String> lines = outputAnalyzer.stdoutAsLines();
+        List<String> lines = asLines(outputAnalyzer.getStdout());
 
         for (var line: lines) {
             if (line.startsWith(totalProcessorCountMessage)) {
