@@ -37,8 +37,11 @@
                          notproduct, \
                          range, \
                          constraint, \
-                         writeable)
-
+                         writeable)                                       \
+                                                                          \
+product(bool, EnableAllLargePageSizesForWindows, false,                   \
+        "Enable support for multiple large page sizes on "                \
+        "Windows Server")
 
 //
 // Defines Windows-specific default values. The flags are available on all
