@@ -2362,7 +2362,7 @@ void ConnectionGraph::adjust_scalar_replaceable_state(JavaObjectNode* jobj, Uniq
 }
 
 void ConnectionGraph::revisit_reducible_phi_status(JavaObjectNode* jobj, Unique_Node_List& reducible_merges) {
-  assert(jobj != nullptr && !jobj->scalar_replaceable(), "jobj should be set as NSR before calling this function.");
+  assert(jobj != NULL && !jobj->scalar_replaceable(), "jobj should be set as NSR before calling this function.");
 
   // Look for 'phis' that refer to 'jobj' as the last
   // remaining scalar replaceable input.
@@ -2377,7 +2377,7 @@ void ConnectionGraph::revisit_reducible_phi_status(JavaObjectNode* jobj, Unique_
 
     for (uint j = 1; j < phi->req(); j++) {
       JavaObjectNode* phi_in_obj = unique_java_object(phi->in(j));
-      if (phi_in_obj != nullptr && phi_in_obj->scalar_replaceable()) {
+      if (phi_in_obj != NULL && phi_in_obj->scalar_replaceable()) {
         good_phi = true;
         break;
       }
