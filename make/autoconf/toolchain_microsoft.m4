@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 #
 # This code is free software; you can redistribute it and/or modify it
@@ -25,7 +25,7 @@
 
 ################################################################################
 # The order of these defines the priority by which we try to find them.
-VALID_VS_VERSIONS="2017 2019 2022 2013 2015 2012 2010"
+VALID_VS_VERSIONS="2022 2019 2017 2013 2015 2012 2010"
 
 VS_DESCRIPTION_2010="Microsoft Visual Studio 2010"
 VS_VERSION_INTERNAL_2010=100
@@ -101,8 +101,8 @@ VS_EDITIONS_2019="BuildTools Community Professional Enterprise"
 VS_SDK_INSTALLDIR_2019=
 VS_VS_PLATFORM_NAME_2019="v142"
 VS_SDK_PLATFORM_NAME_2019=
-VS_SUPPORTED_2019=false
-VS_TOOLSET_SUPPORTED_2019=false
+VS_SUPPORTED_2019=true
+VS_TOOLSET_SUPPORTED_2019=true
 
 VS_DESCRIPTION_2022="Microsoft Visual Studio 2022"
 VS_VERSION_INTERNAL_2022=143
@@ -151,8 +151,8 @@ AC_DEFUN([TOOLCHAIN_CHECK_POSSIBLE_VISUAL_STUDIO_ROOT],
             vc/auxiliary/build/vcvarsx86_amd64.bat vc/auxiliary/build/vcvars64.bat"
       elif test "x$TARGET_CPU" = xaarch64; then
         # for host x86-64, target aarch64
-        VCVARSFILES="vc/auxiliary/build/vcvarsamd64_arm64.bat \
-            vc/auxiliary/build/vcvarsx86_arm64.bat"
+        # aarch64 requires Visual Studio 16.8 or higher
+        VCVARSFILES="vcvarsarm64.bat vcvarsamd64_arm64.bat vcvarsx86_arm64.bat"
       fi
 
       for VCVARSFILE in $VCVARSFILES; do
