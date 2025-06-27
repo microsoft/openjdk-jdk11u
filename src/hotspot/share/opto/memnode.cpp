@@ -277,7 +277,7 @@ static Node *step_through_mergemem(PhaseGVN *phase, MergeMemNode *mmem,  const T
     // complain.
     Node* m = mmem;
     PhaseIterGVN* igvn = phase->is_IterGVN();
-    if (igvn == nullptr || !igvn->delay_transform()) {
+    if (igvn == NULL || !igvn->delay_transform()) {
     // compress paths and change unreachable cycles to TOP
     // If not, we can update the input infinitely along a MergeMem cycle
     // Equivalent code in PhiNode::Ideal
