@@ -2363,6 +2363,40 @@ LONG WINAPI Handle_FLT_Exception(struct _EXCEPTION_POINTERS* exceptionInfo) {
 }
 #endif
 
+#if defined(_M_ARM64)
+
+// SafeFetch handling, static assembly style:
+//
+// SafeFetch32 and SafeFetchN are implemented via static assembly
+// and live in os_cpu/xx_xx/safefetch_xx_xx.S
+
+extern "C" char _SafeFetch32_continuation[];
+extern "C" char _SafeFetch32_fault[];
+
+#ifdef _LP64
+extern "C" char _SafeFetchN_continuation[];
+extern "C" char _SafeFetchN_fault[];
+#endif // _LP64
+
+bool handle_safefetch(int exception_code, address pc, void* context) {
+  CONTEXT* ctx = (CONTEXT*)context;
+  if (exception_code == EXCEPTION_ACCESS_VIOLATION && ctx != nullptr) {
+    if (pc == (address)_SafeFetch32_fault) {
+      os::win32::context_set_pc(ctx, (address)_SafeFetch32_continuation);
+      return true;
+    }
+#ifdef _LP64
+    if (pc == (address)_SafeFetchN_fault) {
+      os::win32::context_set_pc(ctx, (address)_SafeFetchN_continuation);
+      return true;
+    }
+#endif
+  }
+  return false;
+}
+
+#endif // _M_ARM64
+
 static inline void report_error(Thread* t, DWORD exception_code,
                                 address addr, void* siginfo, void* context) {
   VMError::report_and_die(t, exception_code, addr, siginfo, context);
@@ -2386,10 +2420,16 @@ LONG WINAPI topLevelExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {
 #endif
   Thread* t = Thread::current_or_null_safe();
 
+#if defined(_M_ARM64)
+  if (handle_safefetch(exception_code, pc, (void*)exceptionInfo->ContextRecord)) {
+    return EXCEPTION_CONTINUE_EXECUTION;
+  }
+#else
   // Handle SafeFetch32 and SafeFetchN exceptions.
   if (StubRoutines::is_safefetch_fault(pc)) {
     return Handle_Exception(exceptionInfo, StubRoutines::continuation_for_safefetch_fault(pc));
   }
+#endif
 
 #ifndef _WIN64
   // Execution protection violation - win32 running on AMD64 only
