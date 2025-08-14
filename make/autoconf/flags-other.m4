@@ -117,6 +117,12 @@ AC_DEFUN([FLAGS_SETUP_ASFLAGS],
         JVM_BASIC_ASFLAGS+=" $OS_CFLAGS \
             -DMAC_OS_X_VERSION_MAX_ALLOWED=$MACOSX_VERSION_MAX_NODOTS"
     fi
+  elif test "x$TOOLCHAIN_TYPE" = xmicrosoft; then
+    if test "x$OPENJDK_TARGET_CPU" = xaarch64; then
+      JVM_BASIC_ASFLAGS="-nologo"
+    else
+      JVM_BASIC_ASFLAGS="-nologo -c"
+    fi
   fi
 ])
 
