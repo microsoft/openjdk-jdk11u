@@ -33,4 +33,8 @@
     return true;
   }
 
+#define PLATFORM_PRINT_NATIVE_STACK 1
+static bool platform_print_native_stack(outputStream* st, const void* context,
+                                        char *buf, int buf_size, address& lastpc);
+
 #endif // OS_CPU_WINDOWS_AARCH64_OS_WINDOWS_AARCH64_HPP
