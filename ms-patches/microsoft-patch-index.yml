@@ -28,6 +28,7 @@ active-patches:
   - ms-patches/win-aarch64-build-error-8329348
   - ms-patches/use-all-windows-processor-groups
   - ms-patches/gettemppath2
+  - ms-patches/8347129-cpuset-cgroups
 
 
 ## Upstreamed Patches
@@ -47,3 +48,4 @@ active-patches:
   # - ZZ_archive/ms-patches/abandoned-feature-branch-name-1
   # ...
   # - ZZ_archive/ms-patches/abandoned-feature-branch-name-N
+
