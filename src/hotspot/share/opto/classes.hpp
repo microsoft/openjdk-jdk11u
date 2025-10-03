@@ -276,6 +276,7 @@ macro(RoundDoubleModeV)
 macro(RoundFloat)
 macro(SafePoint)
 macro(SafePointScalarObject)
+macro(SafePointScalarMerge)
 #if INCLUDE_SHENANDOAHGC
 macro(ShenandoahCompareAndExchangeP)
 macro(ShenandoahCompareAndExchangeN)

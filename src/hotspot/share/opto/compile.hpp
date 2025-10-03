@@ -365,6 +365,8 @@ class Compile : public Phase {
   const bool            _save_argument_registers; // save/restore arg regs for trampolines
   const bool            _subsume_loads;         // Load can be matched as part of a larger op.
   const bool            _do_escape_analysis;    // Do escape analysis.
+  const bool            _do_iterative_escape_analysis;    // Do iterative escape analysis.
+  const bool 		 _do_reduce_allocation_merges;  // Do try to reduce allocation merges.
   const bool            _eliminate_boxing;      // Do boxing elimination.
   const bool            _do_locks_coarsening;   // Do locks coarsening
   ciMethod*             _method;                // The method being compiled.
@@ -635,6 +637,8 @@ class Compile : public Phase {
   bool              subsume_loads() const       { return _subsume_loads; }
   /** Do escape analysis. */
   bool              do_escape_analysis() const  { return _do_escape_analysis; }
+  bool              do_iterative_escape_analysis() const  { return _do_iterative_escape_analysis; }
+  bool              do_reduce_allocation_merges() const  { return _do_reduce_allocation_merges; }
   /** Do boxing elimination. */
   bool              eliminate_boxing() const    { return _eliminate_boxing; }
   /** Do aggressive boxing elimination. */
@@ -1220,6 +1224,8 @@ class Compile : public Phase {
   // continuation.
   Compile(ciEnv* ci_env, C2Compiler* compiler, ciMethod* target,
           int entry_bci, bool subsume_loads, bool do_escape_analysis,
+          bool do_iterative_escape_analysis,
+          bool do_reduce_allocation_merges,
           bool eliminate_boxing, bool do_locks_coarsening,
           DirectiveSet* directive);
 
@@ -1283,6 +1289,11 @@ class Compile : public Phase {
 
   // Process an OopMap Element while emitting nodes
   void Process_OopMap_Node(MachNode *mach, int code_offset);
+
+  bool contains_as_owner(GrowableArray<MonitorValue*> *monarray, ObjectValue *ov) const;
+  bool contains_as_scalarized(JVMState* jvms, MachSafePointNode* sfn,
+                              GrowableArray<ScopeValue*>* objs,
+                              ObjectValue* ov) const;
 
   // Initialize code buffer
   CodeBuffer* init_buffer(uint* blk_starts);
