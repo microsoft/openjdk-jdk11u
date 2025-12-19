@@ -1,0 +1,8 @@
+title: cpuset cgroups controller is required for no good reason
+- work_item: 2547106 
+- jbs_bug: JDK-8347129
+- author: Severin Gehwolf
+- owner: macarte
+- details:
+  - Small change to make the cpuset cgroups controller optional as far as the JDK is concerned.
+  - release_note: Make the cpuset cgroups controller optional as far as the JDK is concerned.
