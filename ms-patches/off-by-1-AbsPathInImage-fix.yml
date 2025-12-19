@@ -1,0 +1,8 @@
+title: 'Fix off by 1 error in AbsPathInImage.java Test'
+- work_item: 1871207
+- jbs_bug: JDK-8245401
+- author: jmjaffe37
+- owner: jmjaffe37
+- release_note: 'Fix off by 1 error in AbsPathInImage.java Test [JDK-8245401]'
+- details:
+  - 'N/A'
