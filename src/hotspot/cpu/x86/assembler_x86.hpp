@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -1768,6 +1768,8 @@ private:
   void rdtsc();
 
   void ret(int imm16);
+
+  void roll(Register dst, int imm8);
 
 #ifdef _LP64
   void rorq(Register dst, int imm8);
