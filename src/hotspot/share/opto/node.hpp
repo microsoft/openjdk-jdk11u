@@ -145,6 +145,7 @@ class RegionNode;
 class RootNode;
 class SafePointNode;
 class SafePointScalarObjectNode;
+class SafePointScalarMergeNode;
 #if INCLUDE_SHENANDOAHGC
 class ShenandoahBarrierNode;
 #endif
@@ -450,6 +451,7 @@ protected:
   }
   int replace_edge(Node* old, Node* neww);
   int replace_edges_in_range(Node* old, Node* neww, int start, int end);
+  int replace_edges_in_range(Node* old, Node* neww, int start, int end, PhaseGVN* gvn);
   // NULL out all inputs to eliminate incoming Def-Use edges.
   // Return the number of edges between 'n' and 'this'
   int  disconnect_inputs(Node *n, Compile *c);
@@ -684,6 +686,7 @@ public:
       DEFINE_CLASS_ID(EncodeNarrowPtr, Type, 6)
         DEFINE_CLASS_ID(EncodeP, EncodeNarrowPtr, 0)
         DEFINE_CLASS_ID(EncodePKlass, EncodeNarrowPtr, 1)
+      DEFINE_CLASS_ID(SafePointScalarMerge, Type, 7)
 #if INCLUDE_SHENANDOAHGC
       DEFINE_CLASS_ID(ShenandoahBarrier, Type, 7)
 #endif
@@ -889,6 +892,7 @@ public:
   DEFINE_CLASS_QUERY(Root)
   DEFINE_CLASS_QUERY(SafePoint)
   DEFINE_CLASS_QUERY(SafePointScalarObject)
+  DEFINE_CLASS_QUERY(SafePointScalarMerge)
 #if INCLUDE_SHENANDOAHGC
   DEFINE_CLASS_QUERY(ShenandoahBarrier)
 #endif
