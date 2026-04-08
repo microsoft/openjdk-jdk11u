@@ -29,6 +29,7 @@ active-patches:
   - ms-patches/use-all-windows-processor-groups
   - ms-patches/gettemppath2
   - ms-patches/8347129-cpuset-cgroups
+  - ms-patches/detect-lse
 
 
 ## Upstreamed Patches
