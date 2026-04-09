@@ -461,13 +461,11 @@ define SetupCompileNativeFileBody
 	    $(ECHO) >> $$($1_DEPS_FILE) ; \
 	    $(SED) $(DEPENDENCY_TARGET_SED_PATTERN) $$($1_DEPS_FILE) > $$($1_DEPS_TARGETS_FILE)
           else
-            # For assembler calls just create empty dependency lists
+            # For assembler calls just run the assembler; no dependency tracking needed
 	    $$(call ExecuteWithLog, $$@, $$(call MakeCommandRelative, \
 	        $$($1_COMPILER) $$($1_FLAGS) \
 	        $(CC_OUT_OPTION)$$($1_OBJ) $$($1_SRC_FILE))) \
-	        | $(TR) -d '\r' | $(GREP) -v -e "Assembling:" || test "$$$$?" = "1" ; \
-	    $(ECHO) > $$($1_DEPS_FILE) ; \
-	    $(ECHO) > $$($1_DEPS_TARGETS_FILE)
+	        | $(TR) -d '\r' | $(GREP) -v -e "Assembling:" || test "$$$$?" = "1"
           endif
         endif
   endif
