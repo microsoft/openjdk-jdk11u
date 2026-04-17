@@ -1,0 +1,14 @@
+title: jdk11u Backport of Implement MD5 Intrinsics on x86
+- work_item: 
+- jbs_bug: JDK-8250902
+- author: luhenry
+- owner: swesonga
+- contributors:
+  - jmjaffe37
+- details:
+  - The existing implementation of sun.security.provider.MD5.implCompress is done in Java.
+  - When compiled to native code, the generated code contains many Java-isms like array-bound checks.
+  - That hurts performance for an algorithm that can be used to validate large amounts of data.
+  - To speed it up, we can simply create an intrinsic that implements the algorithm without the Java-isms.
+  - That is a similar approach to intrinsics for SHA1/SHA256/SHA512.  
+- release_note: JDK-8250902 Implement MD5 Intrinsics on x86
