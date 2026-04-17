@@ -16,20 +16,21 @@
 # Patches that we are applying to each release.
 active-patches:
 # - ms-patches/microsoft-patch-index // this patch branch is required for all releases
-  - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
-  - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
-  - ms-patches/JFR-command-duration-output
-  - ms-patches/JFR-deoptimization-event
-  - ms-patches/JFR-provide-object-age
-  - ms-patches/md5-intrinsics
-  - ms-patches/off-by-1-AbsPathInImage-fix
-  - ms-patches/reduce-allocation-merges
-  - ms-patches/8306688-sst
+  - ms-patches/win-aarch64-fixes
   - ms-patches/win-aarch64-build-error-8329348
   - ms-patches/use-all-windows-processor-groups
+  - ms-patches/reduce-allocation-merges
+  - ms-patches/off-by-1-AbsPathInImage-fix
+  - ms-patches/md5-intrinsics
   - ms-patches/gettemppath2
-  - ms-patches/8347129-cpuset-cgroups
   - ms-patches/detect-lse
+  - ms-patches/JFR-provide-object-age
+  - ms-patches/JFR-deoptimization-event
+  - ms-patches/JFR-command-duration-output
+  - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
+  - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
+  - ms-patches/8347129-cpuset-cgroups
+  - ms-patches/8306688-sst
 
 
 ## Upstreamed Patches
