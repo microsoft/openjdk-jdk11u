@@ -1,0 +1,13 @@
+title: JFR-Backport-8217089-Lazy install OS Interface for improved startup performance
+- work_item: 1713230
+- jbs_bug: JDK-8217089
+- author: kthatipally
+- owner: kthatipally
+- contributors:
+  - kthatipally
+- details:
+  - code modifications to lazy install os interface components for improved startup.
+  - These changes lets the periodic event requestor thread install os interface components when requested instead of doing it eagerly as part of startup by the initial thread.
+  - This is a backport of the original commit "https://hg.openjdk.org/jdk/jdk/rev/e63a624da347" to JDK 11.
+  - Clean backport, no differences with original commit.
+- release_note: Lazy install os interface components for improved startup
