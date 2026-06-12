@@ -37,7 +37,10 @@
                          notproduct, \
                          range, \
                          constraint, \
-                         writeable)
+                         writeable) \
+                                    \
+product(bool, UseAllWindowsProcessorGroups, false, \
+        "Use all processor groups on supported Windows versions")
 
 
 //
