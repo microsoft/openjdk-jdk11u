@@ -99,7 +99,7 @@ case "$OS" in
     fi
 	SYST="windows"
     ;;
-  CYGWIN* )
+  CYGWIN* | MSYS* | MINGW* )
     NULL=/dev/null
     PS=":"
     FS="/"
