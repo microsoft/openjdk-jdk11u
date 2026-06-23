@@ -30,7 +30,11 @@ active-patches:
   - ms-patches/JFR-Backport-8217089-LazyInstallOsIForImprovedPerf
   - ms-patches/JFR-Backport-8216995-CleanupJFRCmdln
   - ms-patches/8306688-sst
-
+  - ms-patches/connect-timeout
+  - ms-patches/reserved-stack-area
+  - ms-patches/processor-api
+  - ms-patches/multiple-logins
+  - ms-patches/msys2-fixes
 
 ## Upstreamed Patches
 # Patches that we are no longer applying to our releases, as they
