@@ -713,7 +713,8 @@ void VMError::report(outputStream* st, bool _verbose) {
   STEP("printing native stack")
 
    if (_verbose) {
-     if (os::platform_print_native_stack(st, _context, buf, sizeof(buf))) {
+     address lastpc = NULL;
+     if (os::platform_print_native_stack(st, _context, buf, sizeof(buf), lastpc)) {
        // We have printed the native stack in platform-specific code
        // Windows/x64 needs special handling.
      } else {
