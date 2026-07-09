@@ -22,9 +22,14 @@
  */
 
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
+import java.net.Proxy;
 import java.net.ProxySelector;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
@@ -33,6 +38,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.io.IOException;
 import java.nio.channels.UnresolvedAddressException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -49,6 +55,50 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.testng.Assert.fail;
 
 public abstract class AbstractConnectTimeout {
+
+    // Create a local ServerSocket and exhaust its accept queue so that
+    // further connection attempts will block (triggering timeouts).
+    // This replaces the previous approach of connecting to example.com:81
+    // which became unreliable when that host started responding.
+    private static final int BACKLOG = 1;
+    private static final ServerSocket SERVER_SOCKET = createServerSocket();
+    private static final List<Socket> CLIENT_SOCKETS = exhaustServerSocketAdmission();
+
+    private static ServerSocket createServerSocket() {
+        try {
+            return new ServerSocket(0, BACKLOG, InetAddress.getLoopbackAddress());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static List<Socket> exhaustServerSocketAdmission() {
+        List<Socket> sockets = new ArrayList<>();
+        int maxSocketCount = BACKLOG + 512;
+        int connectTimeout = 1000;
+        for (int i = 0; i < maxSocketCount; i++) {
+            try {
+                Socket socket = new Socket();
+                socket.connect(SERVER_SOCKET.getLocalSocketAddress(), connectTimeout);
+                sockets.add(socket);
+            } catch (ConnectException | SocketTimeoutException e) {
+                // Expected - admission queue is exhausted
+                return sockets;
+            } catch (IOException e) {
+                closeSockets(sockets);
+                throw new RuntimeException("Unexpected exception exhausting socket admission", e);
+            }
+        }
+        closeSockets(sockets);
+        throw new RuntimeException("Could not exhaust socket admission after " + maxSocketCount + " connections");
+    }
+
+    private static void closeSockets(List<Socket> sockets) {
+        for (Socket s : sockets) {
+            try { s.close(); } catch (IOException ignore) {}
+        }
+        try { SERVER_SOCKET.close(); } catch (IOException ignore) {}
+    }
 
     static final Duration NO_DURATION = null;
 
@@ -88,8 +138,8 @@ public abstract class AbstractConnectTimeout {
         return l.stream().toArray(Object[][]::new);
     }
 
-    static final ProxySelector EXAMPLE_DOT_COM_PROXY = ProxySelector.of(
-            InetSocketAddress.createUnresolved("example.com", 8080));
+    static final ProxySelector PROXY_SELECTOR = ProxySelector.of(
+            (InetSocketAddress) SERVER_SOCKET.getLocalSocketAddress());
 
     //@Test(dataProvider = "variants")
     protected void timeoutNoProxySync(Version requestVersion,
@@ -110,7 +160,7 @@ public abstract class AbstractConnectTimeout {
                                         Duration requestTimeout)
         throws Exception
     {
-        timeoutSync(requestVersion, scheme, method, connectTimeout, requestTimeout, EXAMPLE_DOT_COM_PROXY);
+        timeoutSync(requestVersion, scheme, method, connectTimeout, requestTimeout, PROXY_SELECTOR);
     }
 
     private void timeoutSync(Version requestVersion,
@@ -169,7 +219,7 @@ public abstract class AbstractConnectTimeout {
                                          String method,
                                          Duration connectTimeout,
                                          Duration requestTimeout) {
-        timeoutAsync(requestVersion, scheme, method, connectTimeout, requestTimeout, EXAMPLE_DOT_COM_PROXY);
+        timeoutAsync(requestVersion, scheme, method, connectTimeout, requestTimeout, PROXY_SELECTOR);
     }
 
     private void timeoutAsync(Version requestVersion,
@@ -223,9 +273,10 @@ public abstract class AbstractConnectTimeout {
                                   Version reqVersion,
                                   String method,
                                   Duration requestTimeout) {
-        // Resolvable address. Most tested environments just ignore the TCP SYN,
-        // or occasionally return ICMP no route to host
-        URI uri = URI.create(scheme +"://example.com:81/");
+        // Use local exhausted ServerSocket address to reliably trigger timeouts
+        String hostAddress = SERVER_SOCKET.getInetAddress().getHostAddress();
+        int hostPort = SERVER_SOCKET.getLocalPort();
+        URI uri = URI.create(scheme + "://" + hostAddress + ":" + hostPort + "/");
         HttpRequest.Builder reqBuilder = HttpRequest.newBuilder(uri);
         reqBuilder = reqBuilder.version(reqVersion);
         switch (method) {
