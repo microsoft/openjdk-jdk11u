@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,6 +25,9 @@
  * @test
  * @bug 8035968
  * @summary Verify that SHA-512 intrinsic is actually used.
+ * @comment the test verifies compilation of java.base methods, so it can't be run w/ AOT'ed java.base
+ * @requires !vm.aot.enabled
+ *
  * @library /test/lib /
  * @modules java.base/jdk.internal.misc
  *          java.management
@@ -79,7 +82,7 @@ import compiler.testlibrary.sha.predicate.IntrinsicPredicates;
 
 public class TestSHA512Intrinsics {
     public static void main(String args[]) throws Exception {
-        new SHASanityTestBase(IntrinsicPredicates.isSHA512IntrinsicAvailable(),
-                SHASanityTestBase.SHA512_INTRINSIC_ID).test();
+        new DigestSanityTestBase(IntrinsicPredicates.isSHA512IntrinsicAvailable(),
+                DigestSanityTestBase.SHA512_INTRINSIC_ID).test();
     }
 }
