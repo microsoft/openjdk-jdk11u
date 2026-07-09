@@ -67,7 +67,7 @@ case "$OS" in
     PS=":"
     FS="/"
     ;;
-  CYGWIN* )
+  CYGWIN* | MSYS* | MINGW* )
     PS=";"
     FS="/"
     ;;
