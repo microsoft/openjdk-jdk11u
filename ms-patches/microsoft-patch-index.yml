@@ -36,6 +36,7 @@ active-patches:
   - ms-patches/multiple-logins
   - ms-patches/msys2-fixes
   - ms-patches/8253900-TestInstanceKlass
+  - ms-patches/dt_socket-fix
 
 ## Upstreamed Patches
 # Patches that we are no longer applying to our releases, as they
