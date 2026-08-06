@@ -35,6 +35,7 @@ active-patches:
   - ms-patches/processor-api
   - ms-patches/multiple-logins
   - ms-patches/msys2-fixes
+  - ms-patches/8253900-TestInstanceKlass
   - ms-patches/dt_socket-fix
 
 ## Upstreamed Patches
