@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -248,6 +248,7 @@ objArrayHandle CompilerToVM::initialize_intrinsics(TRAPS) {
   COMPILER2_PRESENT(do_bool_flag(UseMulAddIntrinsic))                      \
   COMPILER2_PRESENT(do_bool_flag(UseMultiplyToLenIntrinsic))               \
   do_bool_flag(UsePopCountInstruction)                                     \
+  do_bool_flag(UseMD5Intrinsics)                                           \
   do_bool_flag(UseSHA1Intrinsics)                                          \
   do_bool_flag(UseSHA256Intrinsics)                                        \
   do_bool_flag(UseSHA512Intrinsics)                                        \

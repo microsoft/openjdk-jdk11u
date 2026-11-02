@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -59,6 +59,12 @@ public class IntrinsicPredicates {
         return Platform.isServer() && !Platform.isEmulatedClient() && (!isTiered || maxLevelIsReachable);
     };
 
+    public static final BooleanSupplier MD5_INSTRUCTION_AVAILABLE
+            = // x86 variants
+              new OrPredicate(new CPUSpecificPredicate("amd64.*",   null, null),
+              new OrPredicate(new CPUSpecificPredicate("i386.*",    null, null),
+                              new CPUSpecificPredicate("x86.*",     null, null)));
+
     public static final BooleanSupplier SHA1_INSTRUCTION_AVAILABLE
             = new OrPredicate(new CPUSpecificPredicate("aarch64.*", new String[] { "sha1" }, null),
               new OrPredicate(new CPUSpecificPredicate("s390.*",    new String[] { "sha1" }, null),
@@ -96,9 +102,12 @@ public class IntrinsicPredicates {
 
     public static final BooleanSupplier ANY_SHA_INSTRUCTION_AVAILABLE
             = new OrPredicate(IntrinsicPredicates.SHA1_INSTRUCTION_AVAILABLE,
-                    new OrPredicate(
-                            IntrinsicPredicates.SHA256_INSTRUCTION_AVAILABLE,
-                            IntrinsicPredicates.SHA512_INSTRUCTION_AVAILABLE));
+              new OrPredicate(IntrinsicPredicates.SHA256_INSTRUCTION_AVAILABLE,
+                              IntrinsicPredicates.SHA512_INSTRUCTION_AVAILABLE));
+
+    public static final BooleanSupplier MD5_INTRINSICS_AVAILABLE
+            = new AndPredicate(IntrinsicPredicates.COMPILABLE_BY_C2,
+                               IntrinsicPredicates.isIntrinsicAvailable("sun.security.provider.MD5", "implCompress0"));
 
     public static BooleanSupplier isSHA1IntrinsicAvailable() {
         return new AndPredicate(IntrinsicPredicates.COMPILABLE_BY_C2,
