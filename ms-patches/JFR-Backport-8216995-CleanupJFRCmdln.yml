@@ -1,0 +1,14 @@
+title: JFR-Backport-Clean up JFR CmdLine 
+- work_item: 1713229
+- jbs_bug: JDK-8216995
+- author: kthatipally
+- owner: kthatipally
+- contributors:
+  - kthatipally
+- details:
+  - Cleanup JFR commandLine processing - JfrRecorder::is_disabled is called early during bootstrap and uses JVMFlag::find_flag directly to check whether the -XX:-FlightRecorder has been set on the command line. 
+  - Using the FLAG_IS_CMDLINE macro from global_extensions have the same effect cleans it up and might avoid a linear scan.
+  - This is a backport of the original commit "https://hg.openjdk.org/jdk/jdk/rev/65a1d49d1718" to JDK 11.
+  - Differences with original commit - In the enable () method - Line 63, There is an additional validation check for the flight recorder value. 
+    If the FlightRecorder value is already set to true, then the FLAG_SET_MGMT(bool, FlightRecorder, true); is skipped.   
+- release_note: Clean up JFR Command Line.
