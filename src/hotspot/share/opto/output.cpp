@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -538,8 +538,8 @@ void Compile::FillLocArray( int idx, MachSafePointNode* sfpt, Node *local,
   // Is it a safepoint scalar object node?
   if (local->is_SafePointScalarObject()) {
     SafePointScalarObjectNode* spobj = local->as_SafePointScalarObject();
-
     ObjectValue* sv = Compile::sv_for_node_id(objs, spobj->_idx);
+
     if (sv == NULL) {
       ciKlass* cik = t->is_oopptr()->klass();
       assert(cik->is_instance_klass() ||
@@ -555,6 +555,38 @@ void Compile::FillLocArray( int idx, MachSafePointNode* sfpt, Node *local,
       }
     }
     array->append(sv);
+    return;
+  } else if (local->is_SafePointScalarMerge()) {
+    SafePointScalarMergeNode* smerge = local->as_SafePointScalarMerge();
+    ObjectMergeValue* mv = (ObjectMergeValue*) Compile::sv_for_node_id(objs, smerge->_idx);
+
+    if (mv == NULL) {
+      GrowableArray<ScopeValue*> deps;
+
+      int merge_pointer_idx = smerge->merge_pointer_idx(sfpt->jvms());
+      (void)FillLocArray(0, sfpt, sfpt->in(merge_pointer_idx), &deps, objs);
+      assert(deps.length() == 1, "missing value");
+
+      int selector_idx = smerge->selector_idx(sfpt->jvms());
+      (void)FillLocArray(1, NULL, sfpt->in(selector_idx), &deps, NULL);
+      assert(deps.length() == 2, "missing value");
+
+      mv = new ObjectMergeValue(smerge->_idx, deps.at(0), deps.at(1));
+      Compile::set_sv_for_object_node(objs, mv);
+
+      for (uint i = 1; i < smerge->req(); i++) {
+        Node* obj_node = smerge->in(i);
+        int idx = mv->possible_objects()->length();
+        (void)FillLocArray(idx, sfpt, obj_node, mv->possible_objects(), objs);
+
+        // By default ObjectValues that are in 'possible_objects' are not root objects.
+        // They will be marked as root later if they are directly referenced in a JVMS.
+        assert(mv->possible_objects()->length() > idx, "Didn't add entry to possible_objects?!");
+        assert(mv->possible_objects()->at(idx)->is_object(), "Entries in possible_objects should be ObjectValue.");
+        mv->possible_objects()->at(idx)->as_ObjectValue()->set_root(false);
+      }
+    }
+    array->append(mv);
     return;
   }
 
@@ -717,6 +749,36 @@ bool Compile::starts_bundle(const Node *n) const {
           _node_bundling_base[n->_idx].starts_bundle());
 }
 
+// Determine if there is a monitor that has 'ov' as its owner.
+bool Compile::contains_as_owner(GrowableArray<MonitorValue*> *monarray, ObjectValue *ov) const {
+  for (int k = 0; k < monarray->length(); k++) {
+    MonitorValue* mv = monarray->at(k);
+    if (mv->owner() == ov) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Determine if there is a scalar replaced object description represented by 'ov'.
+bool Compile::contains_as_scalarized(JVMState* jvms, MachSafePointNode* sfn,
+                                         GrowableArray<ScopeValue*>* objs,
+                                         ObjectValue *ov) const {
+  for (int i = 0; i < jvms->scl_size(); i++) {
+    Node* n = sfn->scalarized(jvms, i);
+    if (!n->is_SafePointScalarObject()) {
+      continue;
+    }
+
+    ObjectValue* other = (ObjectValue*) sv_for_node_id(objs, n->_idx);
+    if (ov == other) {
+      return true;
+    }
+  }
+  return false;
+}
+
 //--------------------------Process_OopMap_Node--------------------------------
 void Compile::Process_OopMap_Node(MachNode *mach, int current_offset) {
 
@@ -827,6 +889,37 @@ void Compile::Process_OopMap_Node(MachNode *mach, int current_offset) {
           }
           scval = sv;
         }
+      } else if (obj_node->is_SafePointScalarMerge()) {
+        SafePointScalarMergeNode* smerge = obj_node->as_SafePointScalarMerge();
+        ObjectMergeValue* mv = (ObjectMergeValue*) Compile::sv_for_node_id(objs, smerge->_idx);
+
+        if (mv == NULL) {
+          GrowableArray<ScopeValue*> deps;
+
+          int merge_pointer_idx = smerge->merge_pointer_idx(youngest_jvms);
+          (void)FillLocArray(0, sfn, sfn->in(merge_pointer_idx), &deps, objs);
+          assert(deps.length() == 1, "missing value");
+
+          int selector_idx = smerge->selector_idx(youngest_jvms);
+          (void)FillLocArray(1, NULL, sfn->in(selector_idx), &deps, NULL);
+          assert(deps.length() == 2, "missing value");
+
+          mv = new ObjectMergeValue(smerge->_idx, deps.at(0), deps.at(1));
+	        Compile::set_sv_for_object_node(objs, mv);
+
+          for (uint i = 1; i < smerge->req(); i++) {
+            Node* obj_node = smerge->in(i);
+            int idx = mv->possible_objects()->length();
+            (void)FillLocArray(idx, sfn, obj_node, mv->possible_objects(), objs);
+
+            // By default ObjectValues that are in 'possible_objects' are not root objects.
+            // They will be marked as root later if they are directly referenced in a JVMS.
+            assert(mv->possible_objects()->length() > idx, "Didn't add entry to possible_objects?!");
+            assert(mv->possible_objects()->at(idx)->is_object(), "Entries in possible_objects should be ObjectValue.");
+            mv->possible_objects()->at(idx)->as_ObjectValue()->set_root(false);
+          }
+        }
+        scval = mv;
       } else if (!obj_node->is_Con()) {
         OptoReg::Name obj_reg = _regalloc->get_reg_first(obj_node);
         if( obj_node->bottom_type()->base() == Type::NarrowOop ) {
@@ -843,6 +936,30 @@ void Compile::Process_OopMap_Node(MachNode *mach, int current_offset) {
       Location basic_lock = Location::new_stk_loc(Location::normal,_regalloc->reg2offset(box_reg));
       bool eliminated = (box_node->is_BoxLock() && box_node->as_BoxLock()->is_eliminated());
       monarray->append(new MonitorValue(scval, basic_lock, eliminated));
+    }
+
+    // Mark ObjectValue nodes as root nodes if they are directly
+    // referenced in the JVMS.
+    for (int i = 0; i < objs->length(); i++) {
+      ScopeValue* sv = objs->at(i);
+      if (sv->is_object_merge()) {
+        ObjectMergeValue* merge = sv->as_ObjectMergeValue();
+
+        for (int j = 0; j< merge->possible_objects()->length(); j++) {
+          ObjectValue* ov = merge->possible_objects()->at(j)->as_ObjectValue();
+          if (ov->is_root()) {
+            // Already flagged as 'root' by something else. We shouldn't change it
+            // to non-root in a younger JVMS because it may need to be alive in
+            // a younger JVMS.
+          } else {
+            bool is_root = locarray->contains(ov) ||
+                           exparray->contains(ov) ||
+                           contains_as_owner(monarray, ov) ||
+                           contains_as_scalarized(jvms, sfn, objs, ov);
+            ov->set_root(is_root);
+          }
+        }
+      }
     }
 
     // We dump the object pool first, since deoptimization reads it in first.
