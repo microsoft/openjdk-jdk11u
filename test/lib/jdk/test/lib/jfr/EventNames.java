@@ -146,6 +146,7 @@ public class EventNames {
     public static final String CodeCacheFull = PREFIX + "CodeCacheFull";
     public static final String ObjectAllocationInNewTLAB = PREFIX + "ObjectAllocationInNewTLAB";
     public static final String ObjectAllocationOutsideTLAB = PREFIX + "ObjectAllocationOutsideTLAB";
+    public static final String Deoptimization = PREFIX + "Deoptimization";
 
     // OS
     public static final String OSInformation = PREFIX + "OSInformation";
