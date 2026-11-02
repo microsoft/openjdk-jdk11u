@@ -881,6 +881,21 @@ int Node::replace_edges_in_range(Node* old, Node* neww, int start, int end) {
   return nrep;
 }
 
+/**
+ * Replace input edges in the range pointing to 'old' node.
+ */
+int Node::replace_edges_in_range(Node* old, Node* neww, int start, int end, PhaseGVN* gvn) {
+  if (old == neww)  return 0;  // nothing to do
+  uint nrep = 0;
+  for (int i = start; i < end; i++) {
+    if (in(i) == old) {
+      set_req_X(i, neww, gvn);
+      nrep++;
+    }
+  }
+  return nrep;
+}
+
 //-------------------------disconnect_inputs-----------------------------------
 // NULL out all inputs to eliminate incoming Def-Use edges.
 // Return the number of edges between 'n' and 'this'

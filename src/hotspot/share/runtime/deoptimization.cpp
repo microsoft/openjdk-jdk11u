@@ -206,7 +206,7 @@ Deoptimization::UnrollBlock* Deoptimization::fetch_unroll_info_helper(JavaThread
     if (EliminateAllocations) {
 #endif // INCLUDE_JVMCI
       assert (chunk->at(0)->scope() != NULL,"expect only compiled java frames");
-      GrowableArray<ScopeValue*>* objects = chunk->at(0)->scope()->objects();
+      GrowableArray<ScopeValue*>* objects = chunk->at(0)->scope()->objects_to_rematerialize(deoptee, map);
 
       // The flag return_oop() indicates call sites which return oop
       // in compiled code. Such sites include java method calls,
