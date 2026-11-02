@@ -83,7 +83,8 @@ hotspot_compiler_arraycopy = \
 
 tier1_common = \
   sanity/BasicVMTest.java \
-  gtest/GTestWrapper.java
+  gtest/GTestWrapper.java \
+  gtest/WindowsProcessorGroups.java
 
 tier1_compiler = \
   :tier1_compiler_1 \
