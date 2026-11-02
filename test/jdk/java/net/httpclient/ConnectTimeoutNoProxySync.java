@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
  * @test
  * @summary Tests for connection related timeouts
  * @bug 8208391
+ * @requires os.family != "windows"
  * @run testng/othervm ConnectTimeoutNoProxySync
  */
 
