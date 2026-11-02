@@ -49,7 +49,9 @@ const bool CCallingConventionRequiresIntsAsLongs = false;
 // evidence that it's worth doing.
 #define DEOPTIMIZE_WHEN_PATCHING
 
+#if defined(LINUX) || defined(__APPLE__)
 #define SUPPORT_RESERVED_STACK_AREA
+#endif
 
 #define THREAD_LOCAL_POLL
 
