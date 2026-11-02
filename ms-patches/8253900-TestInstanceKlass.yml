@@ -1,0 +1,10 @@
+title: SA: wrong size computation when JVM was built without AOT
+- work_item: 3042210
+- jbs_bug: JDK-8253900
+- author: swesonga
+- owner: swesonga
+- contributors:
+ - swesonga
+- details:
+ - Backport fix for JDK-8253900
+- release_note: Fix wrong InstanceKlass size when JVM was built without AOT
