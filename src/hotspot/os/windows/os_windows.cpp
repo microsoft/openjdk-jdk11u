@@ -2371,6 +2371,29 @@ static inline void report_error(Thread* t, DWORD exception_code,
   // somewhere where we can find it in the minidump.
 }
 
+static bool grow_windows_stack_to(address target) {
+  const volatile NT_TIB* tib = (NT_TIB*)NtCurrentTeb();
+
+  // Touch the page immediately below the current stack limit. Windows handles
+  // this as ordinary stack growth: it commits more stack, lowers StackLimit,
+  // and installs a new moving guard.  Re-read StackLimit after every touch
+  // because Windows may grow the stack by more than one page at a time.
+  while (target < (address)tib->StackLimit) {
+    address old_limit = (address)tib->StackLimit;
+    volatile char* probe = reinterpret_cast<volatile char*>(
+        old_limit - os::vm_page_size());
+
+    // Dummy write to trigger an update to the stack limit.
+    *probe = 0;
+
+    if ((address)tib->StackLimit >= old_limit) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 //-----------------------------------------------------------------------------
 JNIEXPORT
 LONG WINAPI topLevelExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {
@@ -2552,12 +2575,10 @@ LONG WINAPI topLevelExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {
           }
         }
 #ifdef _WIN64
-        // If it's a legal stack address, map the entire region in
-        if (addr > thread->stack_reserved_zone_base() && addr < thread->stack_base()) {
-          addr = (address)((uintptr_t)addr &
-                           (~((uintptr_t)os::vm_page_size() - (uintptr_t)1)));
-          os::commit_memory((char *)addr, thread->stack_base() - addr,
-                            !ExecMem);
+        // If it's a legal stack address, then commit the region of memory from
+        // the current StackLimit down to `addr`.
+        if (thread->is_in_usable_stack(addr) &&
+            grow_windows_stack_to(align_down(addr, os::vm_page_size()))) {
           return EXCEPTION_CONTINUE_EXECUTION;
         }
 #endif
