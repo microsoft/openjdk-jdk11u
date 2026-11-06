@@ -37,6 +37,7 @@ active-patches:
   - ms-patches/msys2-fixes
   - ms-patches/dt_socket-fix
   - ms-patches/8253900-TestInstanceKlass
+  - ms-patches/stack-limit-fix
 
 ## Upstreamed Patches
 # Patches that we are no longer applying to our releases, as they
